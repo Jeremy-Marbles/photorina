@@ -14,8 +14,13 @@ namespace photo {
 			explicit photoSorter(const std::filesystem::path& root_directory);
 			~photoSorter(); 
 
+			//operating system constructor needed?
+
 			std::string getFileName(const std::filesystem::path& fileName);
 			std::string getFilePath(const std::filesystem::path& pathName);
+
+			std::uint32_t getNumFiles();
+			
 			
 		private:
 			std::filesystem::path root_directory_;
@@ -29,12 +34,16 @@ namespace photo {
 			std::mutex mtx;
 			std::thread *thread_pool;
 
-			struct operating_system_info {
-				bool is_windows;
-				bool is_linux;
-				bool is_mac;
+			/*struct operating_system_info {
+				bool is_windows = false;
+				bool is_linux = false;
+				bool is_mac = false;
 
+				std::string linux_root;
+				std::string windows_folder;
 
-			};
+				//TODO: include macOS folder
+
+			};*/
 	};
 }
