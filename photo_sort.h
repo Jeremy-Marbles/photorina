@@ -24,9 +24,16 @@ namespace photo {
 
 			std::uint32_t getNumFiles();
 
-			//TODO: add mutator functions to set the root directory, current working directory and file name
-			
-			
+			//TODO: add mutator functions to set the root directory, current working directory
+			std::string switchCWD(const std::filesystem::path& workingDirectory); //main function to get folder/directory of photos that are stored
+			//std::string switchRoot(); 	//TODO: figure out how linux does root directory on a different drive that is not main.
+							//EX: drive letter are used for root on Windows (C:, E:, etc)
+
+			//TODO: functions to actually start creating folders and moving files
+			//Note: use void? or find some better way?
+			void createDirectory();
+			void movePhoto(/*add variables? or pull from private variables established*/);
+
 		private:
 			std::filesystem::path root_directory_;
 			std::filesystem::path current_working_directory_;
@@ -39,17 +46,6 @@ namespace photo {
 			std::atomic<bool> swap;
 			std::mutex mtx;
 			std::thread *thread_pool;
-
-			/*struct operating_system_info {
-				bool is_windows = false;
-				bool is_linux = false;
-				bool is_mac = false;
-
-				std::string linux_root;
-				std::string windows_folder;
-
-				//TODO: include macOS folder
-
-			};*/
+		};
 	};
 }
