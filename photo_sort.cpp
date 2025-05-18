@@ -68,11 +68,30 @@ namespace photo {
     }
 
     std::string photoSorter::getFilePath(const std::filesystem::path& pathName) {
-        	
+        //return pathName
     }
 
     std::uint32_t photoSorter::getNumFiles() {
 	
+    }
+
+    // Mutators
+    std::string photoSorter::switchCWD(const std::filesystem::path& workingDirectory) {
+
+    }
+
+    //This function will assume that directory to be worked in is on a different hard drive 
+    std::string switchRoot() {
+
+    }
+
+    // Operations functions
+    void photoSorter::createDirectory(std::string dirName) {
+
+    }
+
+    void photoSorter::movePhoto() {
+
     }
 }
 

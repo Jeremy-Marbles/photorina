@@ -26,12 +26,12 @@ namespace photo {
 
 			//TODO: add mutator functions to set the root directory, current working directory
 			std::string switchCWD(const std::filesystem::path& workingDirectory); //main function to get folder/directory of photos that are stored
-			//std::string switchRoot(); 	//TODO: figure out how linux does root directory on a different drive that is not main.
+			std::string switchRoot(); 	//TODO: figure out how linux does root directory on a different drive that is not main.
 							//EX: drive letter are used for root on Windows (C:, E:, etc)
 
 			//TODO: functions to actually start creating folders and moving files
 			//Note: use void? or find some better way?
-			void createDirectory();
+			void createDirectory(std::string dirName);	//dirName is meant to specify a sort type, i.e format, shot date, etc
 			void movePhoto(/*add variables? or pull from private variables established*/);
 
 		private:
