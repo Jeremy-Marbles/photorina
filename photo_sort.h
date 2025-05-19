@@ -19,12 +19,11 @@ namespace photo {
 			//operating system constructor needed?
 			//Not needed: std::filesystem:path handles path formats 
 
-			std::string getFileName(const std::filesystem::path& fileName);
-			std::string getFilePath(const std::filesystem::path& pathName);
-
+			std::string getFileName();
+			std::string getFilePath();
 			std::uint32_t getNumFiles();
-
-			//TODO: add mutator functions to set the root directory, current working directory
+			std::string getCWD();
+			
 			std::string switchCWD(const std::filesystem::path& workingDirectory); //main function to get folder/directory of photos that are stored
 			std::string switchRoot(); 	//TODO: figure out how linux does root directory on a different drive that is not main.
 							//EX: drive letter are used for root on Windows (C:, E:, etc)
@@ -37,11 +36,12 @@ namespace photo {
 		private:
 			std::filesystem::path root_directory_;
 			std::filesystem::path current_working_directory_;
-			std::string file_name;
+			std::filesystem::path file_path_;
+
+			std::string file_name;	//
 			std::atomic<std::uint32_t> num_files;	//number of files in a folder structure, directories also count as files
 			int *file_position;	//thread specific file position
 			
-			std::string file_path;
 
 			std::atomic<bool> swap;
 			std::mutex mtx;

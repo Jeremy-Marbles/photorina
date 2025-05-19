@@ -61,28 +61,35 @@ namespace photo {
       	delete file_position;
     }
 
+    //TODO: add error handling for all functions below
+
     // Getters
-    std::string photoSorter::getFileName(const std::filesystem::path& fileName) {
-        return fileName.filename().string();
+    std::string photoSorter::getFileName() {
+        return file_name;
 	
     }
 
-    std::string photoSorter::getFilePath(const std::filesystem::path& pathName) {
-        //return pathName
+    std::string photoSorter::getFilePath() {
+        return file_path_.string();
     }
 
-    std::uint32_t photoSorter::getNumFiles() {
-	
+    std::atomic<uint32_t> photoSorter::getNumFiles() {
+	return num_files;
     }
 
-    // Mutators
+    std::string photoSorter::getCWD() {
+	return current_working_directory_.string();
+    }
+
+    // Setters
     std::string photoSorter::switchCWD(const std::filesystem::path& workingDirectory) {
-
+	current_working_directory_ = workingDirectory;
+	return current_working_directory_.string();
     }
 
     //This function will assume that directory to be worked in is on a different hard drive 
-    std::string switchRoot() {
-
+    std::string photoSorter::switchRoot() {
+	
     }
 
     // Operations functions
