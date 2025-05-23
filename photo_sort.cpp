@@ -88,7 +88,8 @@ namespace photo {
     }
 
     //This function will assume that directory to be worked in is on a different hard drive 
-    std::string photoSorter::switchRoot() {
+    std::string photoSorter::switchRoot(const std::string directorySwitch) {
+	root_directory_ = directorySwitch;
 	
     }
 

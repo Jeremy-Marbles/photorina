@@ -9,6 +9,17 @@
 # 4. The images will be moved into the corresponding folders.
 #
 */
+
+/* Notes:
+ * -filesystem::path takes either 1) file or 2) directory, 
+ * so generally no need for a file name variable that is only string based. 
+ * -path operator = takes either a path format object or a basic string object towards a path name 
+ * -file_type detects whether a file or directory is given by a path object.
+ * 
+ * TODO: figure out if filesystem library can create directories and if it uses a distinct command
+ * Also TODO: Sketch logic for inserting a new directory into the CWD for photos
+ * */
+
 #include "photo_sort.h"
 
 #include <iostream>
@@ -23,3 +34,5 @@ int main(int argc, char *argv[])
 {
 	return 0;
 }
+
+
