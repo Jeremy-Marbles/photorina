@@ -15,7 +15,7 @@
  * so generally no need for a file name variable that is only string based. 
  * -path operator = takes either a path format object or a basic string object towards a path name 
  * -file_type detects whether a file or directory is given by a path object.
- * 
+ *
  * TODO: figure out if filesystem library can create directories and if it uses a distinct command
  * Also TODO: Sketch logic for inserting a new directory into the CWD for photos
  * */
@@ -32,6 +32,21 @@
 
 int main(int argc, char *argv[])
 {
+	//TODO: Make test functions for use on main
+	namespace photo {
+		const std::filesystem::path userDirectory = "C:\";
+		photoSorter newOrganizer;
+		newOrganizer.switchRoot(userDirectory);
+		
+		const std::filesystem::path photoFolder = "C:\users\marbl\photos";
+		newOrganizer.switchCWD(photoFolder);
+
+		std::string printCWD = newOrganizer.getCWD();
+		printf("%s", printCWD);
+
+		//std::string fileName = newOrganizer.getFileName();
+		std::atomic<uint32_t> fileNumber = newOrganizer.getNumFiles();
+	}
 	return 0;
 }
 

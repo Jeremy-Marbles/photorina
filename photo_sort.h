@@ -25,7 +25,7 @@ namespace photo {
 			std::string getCWD();
 			
 			std::string switchCWD(const std::filesystem::path& workingDirectory); //main function to get folder/directory of photos that are stored
-			std::string switchRoot(); 	//TODO: figure out how linux does root directory on a different drive that is not main.
+			std::string switchRoot(const std::filesystem::path& rootDir); 	//TODO: figure out how linux does root directory on a different drive that is not main.
 							//EX: drive letter are used for root on Windows (C:, E:, etc)
 
 			//TODO: functions to actually start creating folders and moving files
