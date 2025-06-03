@@ -46,6 +46,10 @@ namespace photo {
 			std::atomic<bool> swap;
 			std::mutex mtx;
 			std::thread *thread_pool;
+
+			//potential additions for filesystem
+			//array of bools to represent a current directory structure that reflects changes
+			//private function to print out directory structure for CLI. will be changed if GUI application is made
 		};
 	};
 }

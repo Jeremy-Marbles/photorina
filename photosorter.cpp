@@ -42,10 +42,15 @@ int main(int argc, char *argv[])
 		newOrganizer.switchCWD(photoFolder);
 
 		std::string printCWD = newOrganizer.getCWD();
-		printf("%s", printCWD);
+		printf("CWD: %s", printCWD);
+		
 
 		//std::string fileName = newOrganizer.getFileName();
 		std::atomic<uint32_t> fileNumber = newOrganizer.getNumFiles();
+		std::cout << "# files in directory: " << fileNumber.load() << std::endl;
+
+		
+		
 	}
 	return 0;
 }

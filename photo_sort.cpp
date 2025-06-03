@@ -1,10 +1,12 @@
 #include "photo_sort.h"
+#include <cassert>
+#include <cstdlib>
 
 namespace photo {
 
     // Constructors
     photoSorter::photoSorter() {
-        root_directory_{};
+	root_directory_{};
         num_files = 0;
         file_position = nullptr;
         file_path = "";
@@ -32,17 +34,18 @@ namespace photo {
 	}
 
 	std::error_code variableConstructEC;
-	bool existingPath = std::filesystem::exists(root_directory_, ec);
+	bool existingPath = std::filesystem::exists(root_directory_, variableConstructEC); //exists returns bool. adding an error code variable sets a error print out, platform specific 
 	if (variableConstructEC) {
 		throw std::filesystem::filesystem_error(
 			"Error verifying existence of specified root directory: " + root_directory_.string(), root_directory_, variableConstructEC
 		);
 	}
 
-	if (!path_exists) {
+	if (!existingPath) {
 		throw std::filesystem::filesystem_error ("Specified root directory does not exist: " + root_directory_.string(), root_directory_, std::make_error_code(std::errc::no_such_file_or_directory));
 	}
 	
+	//if variable 
 	bool isDir = std::filesystem::is_directory(root_directory_, variableConstructEC);
 	if (variableConstructEC) {
 		throw std::filesystem::filesystem_error(
@@ -95,11 +98,22 @@ namespace photo {
 
     // Operations functions
     void photoSorter::createDirectory(std::string dirName) {
+	//utilize directory::createDirectory command
+    	//1) check if current path is CWD
+	//1a) if not, force std::filesystem::current_path to current_working_directory_ and throw warning
+	//2) call std::filesystem::create_directory for one new directory path
+	//- Names for directory path should be either specified or chosen from options of items that need to be sorted i.e any metadata
+    	bool inPath = std::filesystem::current_path(std::filesystem::temp_directory_path());
+	if (current_working_directory_ != inPath) {
+		current_working_directory_ = std::filesystem::current_path(std::filesystem::temp_directory_path);
+		//TODO: throw warning that directory is not correct and CWD is now changed to reflect change
 
+	}
+	std::filesystem::create_directory(dirName);	
     }
 
     void photoSorter::movePhoto() {
-
+    	
     }
 }
 
