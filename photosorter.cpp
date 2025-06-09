@@ -30,28 +30,59 @@
 #include <mutex>
 #include <filesystem> //https://en.cppreference.com/w/cpp/filesystem
 
+int unitTest_constructor() //test 1 passed
+{
+	const std::filesystem::path userDirectory = "C:\\";
+	photo::photoSorter newOrganizer ( userDirectory );
+	//newOrganizer.switchRoot(userDirectory);
+
+	const std::filesystem::path photoFolder = "C:\\users\\marbl\\pictures\\";
+	newOrganizer.switchCWD(photoFolder);
+
+	std::string printCWD = newOrganizer.getCWD();
+	printf("CWD: %s \n", printCWD.c_str());
+
+	//std::string fileName = newOrganizer.getFileName();
+	newOrganizer.setNumFiles();
+	std::atomic<uint32_t> fileNumber = newOrganizer.getNumFiles();
+	std::cout << " # files in directory: " << fileNumber.load() << std::endl;
+
+	return 0;
+}
+
+int unitTest_getters() //test 2
+{
+	const std::filesystem::path mainDirectory = "C:\\";
+	photo::photoSorter newOrganizer2 ( mainDirectory );
+
+	const std::filesystem::path photoFolder = "C:\\users\\marbl\\pictures\\";
+	newOrganizer2.switchCWD(photoFolder);
+	std::cout << "File path: " << newOrganizer2.getFilePath() << std::endl;
+	std::atomic<uint32_t> fileNumber = newOrganizer2.getNumFiles();
+	std::cout << "# files: " << fileNumber.load() << std::endl;
+	std::cout << "Current working directory: " << newOrganizer2.getCWD() << std::endl;
+	
+}
+
 int main(int argc, char *argv[])
 {
-	//TODO: Make test functions for use on main
-	namespace photo {
-		const std::filesystem::path userDirectory = "C:\";
-		photoSorter newOrganizer;
-		newOrganizer.switchRoot(userDirectory);
-		
-		const std::filesystem::path photoFolder = "C:\users\marbl\photos";
-		newOrganizer.switchCWD(photoFolder);
+	/*
+	const std::filesystem::path userDirectory = "C:\\";
+	photo::photoSorter newOrganizer ( userDirectory );
+	//newOrganizer.switchRoot(userDirectory);
 
-		std::string printCWD = newOrganizer.getCWD();
-		printf("CWD: %s", printCWD);
-		
+	const std::filesystem::path photoFolder = "C:\\users\\marbl\\pictures\\";
+	newOrganizer.switchCWD(photoFolder);
 
-		//std::string fileName = newOrganizer.getFileName();
-		std::atomic<uint32_t> fileNumber = newOrganizer.getNumFiles();
-		std::cout << "# files in directory: " << fileNumber.load() << std::endl;
+	std::string printCWD = newOrganizer.getCWD();
+	printf("CWD: %s \n", printCWD.c_str());
 
-		
-		
-	}
+	//std::string fileName = newOrganizer.getFileName();
+	newOrganizer.setNumFiles();
+	std::atomic<uint32_t> fileNumber = newOrganizer.getNumFiles();
+	std::cout << " # files in directory: " << fileNumber.load() << std::endl;
+	*/
+
 	return 0;
 }
 
