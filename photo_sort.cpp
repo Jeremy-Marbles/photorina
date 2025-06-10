@@ -45,7 +45,7 @@ namespace photo {
 			throw std::filesystem::filesystem_error ("Specified root directory does not exist: " + root_directory_.string(), root_directory_, std::make_error_code(std::errc::no_such_file_or_directory));
 		}
 		
-		//if variable 
+		//if variable is not empty, check if it is a directory
 		bool isDir = std::filesystem::is_directory(root_directory_, variableConstructEC);
 		if (variableConstructEC) {
 			throw std::filesystem::filesystem_error(
@@ -60,7 +60,7 @@ namespace photo {
     }
     
     // Destructor
-    photoSorter::~photoSorter() {
+	photoSorter::~photoSorter() {
       	delete file_position;
     }
 
@@ -88,21 +88,55 @@ namespace photo {
 		current_working_directory_ = workingDirectory;
 		return current_working_directory_.string();
     }
-
-    //This function will assume that directory to be worked in is on a different hard drive 
+    
     std::string photoSorter::switchRoot(const std::string directorySwitch) {
+		//This function will assume that directory to be worked in is on a different hard drive 
 		root_directory_ = directorySwitch;
 		return root_directory_.string();
     }
 
-	//sets the number of files in the current working directory only
+	
 	uint32_t photoSorter::setNumFiles() {
+		//sets the number of files in the current working directory only
 		num_files = std::distance(std::filesystem::directory_iterator(current_working_directory_), std::filesystem::directory_iterator());
 		return num_files;
 	}
 
 	int photoSorter::setCurrentListedFile(std::string fileName) {
-	
+		try
+		{
+			//NOTE: function will not add "/" during append
+			std::string completePath = current_working_directory_.string() += fileName += "\\"; 
+			file_path_ = completePath;
+			if (!std::filesystem::exists(file_path_)) {
+				throw std::invalid_argument("File path does not exist.");
+			}
+		}
+		catch(const std::exception& e)
+		{
+			std::cerr << e.what() << '\n';
+		}
+
+		return 1;
+	}
+
+	int photoSorter::setCurrentListedFilePATH(std::filesystem::path fullPath) {
+		//TODO: error handling for invalid path
+		try
+		{
+			if (!std::filesystem::exists(fullPath))
+			{
+				throw std::invalid_argument("File path does not exist.");
+			}
+		}
+		catch(const std::exception& e)
+		{
+			std::cerr << e.what() << '\n';
+		}
+		
+		file_path_ = fullPath;
+		
+		return 1;
 	}
 
     // Operations functions

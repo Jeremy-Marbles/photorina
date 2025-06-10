@@ -29,6 +29,7 @@ namespace photo {
 							//EX: drive letter are used for root on Windows (C:, E:, etc)
 			uint32_t setNumFiles();	//set number of files based off current_working_directory_
 			int setCurrentListedFile(std::string fileName);
+			int setCurrentListedFilePATH(std::filesystem::path directFilePath);
 
 			//TODO: functions to actually start creating folders and moving files
 			//Note: use void? or find some better way?

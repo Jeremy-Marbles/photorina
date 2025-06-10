@@ -62,6 +62,18 @@ int unitTest_getters() //test 2
 	std::cout << "# files: " << fileNumber.load() << std::endl;
 	std::cout << "Current working directory: " << newOrganizer2.getCWD() << std::endl;
 	
+	// Test getFileName success
+	newOrganizer2.setCurrentListedFile("DSC01803.jpeg");
+	std::cout << "Current listed file: " << newOrganizer2.getFileName() << std::endl;
+
+	// Test setCurrentListedFile error
+	//newOrganizer2.setCurrentListedFile("nonexistent_file.jpeg");
+	//std::cout << "File path: " << newOrganizer2.getFilePath() << std::endl;
+
+	newOrganizer2.setCurrentListedFilePATH("C:\\users\\marbl\\pictures\\DSC01803.jpeg");
+	std::cout << "File path after setting current listed file: " << newOrganizer2.getFilePath() << std::endl;
+	
+	return 0;
 }
 
 int main(int argc, char *argv[])
@@ -82,6 +94,9 @@ int main(int argc, char *argv[])
 	std::atomic<uint32_t> fileNumber = newOrganizer.getNumFiles();
 	std::cout << " # files in directory: " << fileNumber.load() << std::endl;
 	*/
+
+	//unitTest_constructor();
+	unitTest_getters();
 
 	return 0;
 }
