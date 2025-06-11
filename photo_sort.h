@@ -23,6 +23,8 @@ namespace photo {
 			std::string getFilePath();
 			std::uint32_t getNumFiles();
 			std::string getCWD();
+
+			std::string getFilesInDirectory(const std::filesystem::path& directory); //https://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
 			
 			std::string switchCWD(const std::filesystem::path& workingDirectory); //main function to get folder/directory of photos that are stored
 			std::string switchRoot(const std::string directorySwitch); 	//TODO: figure out how linux does root directory on a different drive that is not main.

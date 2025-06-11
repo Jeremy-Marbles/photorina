@@ -18,6 +18,8 @@
  *
  * TODO: figure out if filesystem library can create directories and if it uses a distinct command
  * Also TODO: Sketch logic for inserting a new directory into the CWD for photos
+ * 
+ * TODO: fstream library integration for txt settings/config file
  * */
 
 #include "photo_sort.h"
@@ -47,6 +49,12 @@ int unitTest_constructor() //test 1 passed
 	std::atomic<uint32_t> fileNumber = newOrganizer.getNumFiles();
 	std::cout << " # files in directory: " << fileNumber.load() << std::endl;
 
+	std::string path = newOrganizer.getCWD();
+	for (const auto & entry : std::filesystem::directory_iterator(path)) {
+		std::cout << entry.path() << std::endl;
+
+	}
+
 	return 0;
 }
 
@@ -57,21 +65,21 @@ int unitTest_getters() //test 2
 
 	const std::filesystem::path photoFolder = "C:\\users\\marbl\\pictures\\";
 	newOrganizer2.switchCWD(photoFolder);
-	std::cout << "File path: " << newOrganizer2.getFilePath() << std::endl;
-	std::atomic<uint32_t> fileNumber = newOrganizer2.getNumFiles();
-	std::cout << "# files: " << fileNumber.load() << std::endl;
-	std::cout << "Current working directory: " << newOrganizer2.getCWD() << std::endl;
+	//std::cout << "File path: " << newOrganizer2.getFilePath() << std::endl;
 	
-	// Test getFileName success
-	newOrganizer2.setCurrentListedFile("DSC01803.jpeg");
-	std::cout << "Current listed file: " << newOrganizer2.getFileName() << std::endl;
+	newOrganizer2.setNumFiles();
+	std::atomic<uint32_t> fileNumber = newOrganizer2.getNumFiles();
+	
+	std::cout << "# files: " << fileNumber.load() << std::endl;
+	std::cout << "CWD: " << newOrganizer2.getCWD() << std::endl;
+	
+	// Test getFileName 
+	newOrganizer2.setCurrentListedFile("DSC01803.JPG");	//FIXME:
+	std::cout << "Current listed file path: " << newOrganizer2.getFilePath() << std::endl;
 
 	// Test setCurrentListedFile error
 	//newOrganizer2.setCurrentListedFile("nonexistent_file.jpeg");
 	//std::cout << "File path: " << newOrganizer2.getFilePath() << std::endl;
-
-	newOrganizer2.setCurrentListedFilePATH("C:\\users\\marbl\\pictures\\DSC01803.jpeg");
-	std::cout << "File path after setting current listed file: " << newOrganizer2.getFilePath() << std::endl;
 	
 	return 0;
 }

@@ -42,7 +42,8 @@ namespace photo {
 		}
 
 		if (!existingPath) {
-			throw std::filesystem::filesystem_error ("Specified root directory does not exist: " + root_directory_.string(), root_directory_, std::make_error_code(std::errc::no_such_file_or_directory));
+			throw std::filesystem::filesystem_error (
+				"Specified root directory does not exist: " + root_directory_.string(), root_directory_, std::make_error_code(std::errc::no_such_file_or_directory));
 		}
 		
 		//if variable is not empty, check if it is a directory
@@ -63,8 +64,6 @@ namespace photo {
 	photoSorter::~photoSorter() {
       	delete file_position;
     }
-
-    //TODO: add error handling for all functions below
 
     // Getters
     std::string photoSorter::getFileName() {
@@ -105,36 +104,87 @@ namespace photo {
 	int photoSorter::setCurrentListedFile(std::string fileName) {
 		try
 		{
-			//NOTE: function will not add "/" during append
-			std::string completePath = current_working_directory_.string() += fileName += "\\"; 
-			file_path_ = completePath;
-			if (!std::filesystem::exists(file_path_)) {
-				throw std::invalid_argument("File path does not exist.");
+			//NOTES: The / operator for filesystem::path handles path separators correctly
+			// Construct the full path by joining the current working directory and the file name
+			std::filesystem::path potentialFilePath = current_working_directory_ / fileName;
+			
+			//std::cout << "PFP: " << potentialFilePath.string() << std::endl;
+
+			std::error_code potentialFileNF;
+			if (!std::filesystem::exists(potentialFilePath, potentialFileNF)) {
+				if (potentialFileNF) {	//os error occurred
+					throw std::filesystem::filesystem_error(
+					"Error checking existence of file: " + potentialFilePath.string(),
+					potentialFilePath,
+					potentialFileNF);
+					std::cout << std::endl;
+				}
+				throw std::filesystem::filesystem_error( //file 100% does not exist
+					"File does not exist: " + potentialFilePath.string(),
+					potentialFilePath,
+					std::make_error_code(std::errc::no_such_file_or_directory));
+					std::cout << std::endl;
 			}
+
+			file_path_ = potentialFilePath;
+			file_name = file_path_.filename().string();
+			//std::cout << "FP: " << file_path_.string() << std::endl;
+		}
+		catch(const std::filesystem::filesystem_error& CLF_Error)
+		{
+			std::cerr << "Filesystem Error in setCurrentListedFile: " << CLF_Error.what() << std::endl;
+			if (!CLF_Error.path1().empty()) {
+				std::cerr << " Path1: " << CLF_Error.path1().string() << std::endl;
+			}
+			if (!CLF_Error.path2().empty()) {
+				std::cerr << " Path2: " << CLF_Error.path2().string() << std::endl;
+			}
+			return 0;
 		}
 		catch(const std::exception& e)
 		{
-			std::cerr << e.what() << '\n';
+			std::cerr << "Error in setCurrentListedFile:" << e.what() << std::endl;
+			return 0;
 		}
 
 		return 1;
 	}
 
 	int photoSorter::setCurrentListedFilePATH(std::filesystem::path fullPath) {
-		//TODO: error handling for invalid path
 		try
 		{
-			if (!std::filesystem::exists(fullPath))
-			{
-				throw std::invalid_argument("File path does not exist.");
+			std::error_code CLFPathErr;
+			if (!std::filesystem::exists(fullPath, CLFPathErr)) {
+				if (CLFPathErr) {
+					throw std::filesystem::filesystem_error(
+						"Error checking existence of path: " + fullPath.string(),
+						fullPath,
+						CLFPathErr);
+				}
+				throw std::filesystem::filesystem_error(
+					"Specified file path does not exist: " + fullPath.string(),
+					fullPath,
+					std::make_error_code(std::errc::no_such_file_or_directory));
 			}
+
+			file_path_ = fullPath;
+		}
+		catch(const std::filesystem::filesystem_error& CLFPathErr) 
+		{
+			std::cerr << "Filesystem Error in setCurrentListedFilePATH: " << CLFPathErr.what() << std::endl;
+			if (!CLFPathErr.path1().empty()) {
+				std::cerr << " Path1: " << CLFPathErr.path1().string() << std::endl;
+			}
+			if (!CLFPathErr.path2().empty()) {
+				std::cerr << " Path2: " << CLFPathErr.path2().string() << std::endl;
+			}
+			return 0;
 		}
 		catch(const std::exception& e)
 		{
-			std::cerr << e.what() << '\n';
+			std::cerr << "Error in setCurrentListedFilePATH: " << e.what() << '\n';
+			return 0;
 		}
-		
-		file_path_ = fullPath;
 		
 		return 1;
 	}
