@@ -58,7 +58,7 @@ int unitTest_constructor() //test 1 passed
 	return 0;
 }
 
-int unitTest_getters() //test 2
+int unitTest_getters() //test 2 complete
 {
 	const std::filesystem::path mainDirectory = "C:\\";
 	photo::photoSorter newOrganizer2 ( mainDirectory );
@@ -82,6 +82,16 @@ int unitTest_getters() //test 2
 	//std::cout << "File path: " << newOrganizer2.getFilePath() << std::endl;
 	
 	return 0;
+}
+
+int unitTest_operators() //test 3
+{
+	const std::filesystem::path mainDirectory = "C:\\:";
+	photo::photoSorter newOrganizer3 ( mainDirectory );
+	const std::filesystem::path testLibrary = "C:\\users\\marbl\\desktop\\photorina test folder";
+	newOrganizer3.switchCWD(testLibrary);
+	std::cout << "1. " << newOrganizer.getCWD() << std::endl;
+	newOrganizer3.setNumiFiles();
 }
 
 int main(int argc, char *argv[])
