@@ -1,7 +1,7 @@
 /*
-### Project PhotoSorter by Jeremy Wong
+### "Photorina": Photo-sorter project by Jeremy Wong
 # This project is a photo sorting application that organizes photos into folders based on their metadata.
-# It uses C++17 and the C++ standard library for file handling and threading.
+# It uses C++17 and the C++ filesystem library for file handling and threading.
 # How to use:
 # 1. Specify the directory containing the photos to be sorted.
 # 2. The program will scan the directory and its subdirectories for image files.
@@ -90,8 +90,12 @@ int unitTest_operators() //test 3
 	photo::photoSorter newOrganizer3 ( mainDirectory );
 	const std::filesystem::path testLibrary = "C:\\users\\marbl\\desktop\\photorina test folder";
 	newOrganizer3.switchCWD(testLibrary);
-	std::cout << "1. " << newOrganizer.getCWD() << std::endl;
-	newOrganizer3.setNumiFiles();
+	std::cout << "1. " << newOrganizer3.getCWD() << std::endl;
+	newOrganizer3.setNumFiles();
+
+  newOrganizer3.createDirectory("genTest");
+    
+  //Add a print out for all files in the directory
 }
 
 int main(int argc, char *argv[])

@@ -206,8 +206,26 @@ namespace photo {
 		std::filesystem::create_directory(dirName);	
     }
 
-    void photoSorter::movePhoto() {
+    void photoSorter::movePhoto(std::filesystem::path destination) {
     	//NOTE: utilize try-catch for error handling
+      //
+      try 
+      {
+        std::errorcode moveErrCWD;
+        if (!std::filesystem::exists(current_working_directory_, moveErrCWD) {
+            throw std::filesystem::filesystem_error(
+                "Error finding set CWD: " + current_working_directory_.string(),
+                moveErrCWD;)
+            }
+      }
+      catch ()
+      {
+
+      }
+
+    }
+
+    void photoSorter::movePhoto(std::filesystem::path destination, std::string name) {
 
     }
 }
