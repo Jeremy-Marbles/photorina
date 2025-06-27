@@ -82,6 +82,14 @@ namespace photo {
 		return current_working_directory_.string();
     }
 
+	std::string photoSorter::getFilesInDirectory(std::filesystem::path& directory) {
+		for (const auto & entry : std::filesystem::directory_iterator(directory)) {
+			std::cout << entry.path() << std::endl;
+		}
+
+		return "Completed listing files in directory: " + directory.string();
+	}
+
     // Setters
     std::string photoSorter::switchCWD(const std::filesystem::path& workingDirectory) {
 		current_working_directory_ = workingDirectory;
@@ -189,43 +197,57 @@ namespace photo {
 		return 1;
 	}
 
+	int photoSorter::setFileList() {
+		
+		return 0;
+	}
+
     // Operations functions
     void photoSorter::createDirectory(std::string dirName) {
 	//utilize directory::createDirectory command
     //1) check if current path is CWD
-	//1a) if not, force std::filesystem::current_path to current_working_directory_ and throw warning
 	//2) call std::filesystem::create_directory for one new directory path
 	//- Names for directory path should be either specified or chosen from options of items that need to be sorted i.e any metadata
-    	
-		if (current_working_directory_ != std::filesystem::current_path()) {
-			auto tempPath = std::filesystem::current_path();
-			current_working_directory_ = tempPath; 
-			std::cerr << "Warning: Current working directory was not set to expected path. CWD is now: " << current_working_directory_.string() << std::endl;
+
+		std::filesystem::path newDirPath = current_working_directory_ / dirName;
+		try 
+		{
+			if (std::filesystem::create_directory(newDirPath)) {
+				std::cout << "Directory created successfully: " << newDirPath.string() << std::endl;
+			} else {
+				std::cout << "Directory already exists or could not be created: " << newDirPath.string() << std::endl;
+			}
+		} catch (const std::filesystem::filesystem_error& e)
+		{
+			std::cerr << "Error creating directory: " << e.what() << std::endl;
+			if (!e.path1().empty()) {
+				std::cerr << " Path1: " << e.path1().string() << std::endl;
+			}
+			if (!e.path2().empty()) {
+				std::cerr << " Path2: " << e.path2().string() << std::endl;
+			}
 		}
-
-		std::filesystem::create_directory(dirName);	
     }
 
-    void photoSorter::movePhoto(std::filesystem::path destination) {
-    	//NOTE: utilize try-catch for error handling
-      //
-      try 
-      {
-        std::errorcode moveErrCWD;
-        if (!std::filesystem::exists(current_working_directory_, moveErrCWD) {
-            throw std::filesystem::filesystem_error(
+	void photoSorter::movePhoto(std::filesystem::path destination) {	
+		//this command assumes a set condition was made for what files are specified, EX. given file_name_ in the private variables
+      	try 
+      	{
+        	std::error_code moveErrCWD;
+        	if (!std::filesystem::exists(current_working_directory_, moveErrCWD)) {
+            	throw std::filesystem::filesystem_error(
                 "Error finding set CWD: " + current_working_directory_.string(),
-                moveErrCWD;)
-            }
-      }
-      catch ()
-      {
+                moveErrCWD);
+        	}
+      	}
+      	catch (const std::filesystem::filesystem_error& moveErrCWD)
+      	{
 
-      }
+      	}
 
     }
 
-    void photoSorter::movePhoto(std::filesystem::path destination, std::string name) {
+	void photoSorter::movePhoto(std::filesystem::path destination, std::string name) {
 
     }
 }

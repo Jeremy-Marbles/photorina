@@ -86,16 +86,17 @@ int unitTest_getters() //test 2 complete
 
 int unitTest_operators() //test 3
 {
-	const std::filesystem::path mainDirectory = "C:\\:";
+	const std::filesystem::path mainDirectory = "C:\\";
 	photo::photoSorter newOrganizer3 ( mainDirectory );
-	const std::filesystem::path testLibrary = "C:\\users\\marbl\\desktop\\photorina test folder";
+	const std::filesystem::path testLibrary = "C:\\users\\marbl\\desktop\\photorina test folder\\";
 	newOrganizer3.switchCWD(testLibrary);
 	std::cout << "1. " << newOrganizer3.getCWD() << std::endl;
 	newOrganizer3.setNumFiles();
 
-  newOrganizer3.createDirectory("genTest");
+  	newOrganizer3.createDirectory("genTest");
     
-  //Add a print out for all files in the directory
+  	//Add a print out for all files in the directory
+	return 0;
 }
 
 int main(int argc, char *argv[])
@@ -118,7 +119,8 @@ int main(int argc, char *argv[])
 	*/
 
 	//unitTest_constructor();
-	unitTest_getters();
+	//unitTest_getters();
+	unitTest_operators();
 
 	return 0;
 }
