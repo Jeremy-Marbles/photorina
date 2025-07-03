@@ -96,6 +96,8 @@ int unitTest_operators() //test 3
   	newOrganizer3.createDirectory("genTest");
     
   	//Add a print out for all files in the directory
+	newOrganizer3.setFileList();
+	
 	return 0;
 }
 

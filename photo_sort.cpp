@@ -3,7 +3,6 @@
 #include <cstdlib>
 
 namespace photo {
-
     // Constructors
     photoSorter::photoSorter() {
 		root_directory_ = std::filesystem::path();
@@ -198,8 +197,40 @@ namespace photo {
 	}
 
 	int photoSorter::setFileList() {
+		file_list.clear();
+
+		try 
+		{
+			std::error_code listSetEC;
+			if (!std::filesystem::is_directory(current_working_directory_, listSetEC) || listSetEC) {
+				if (listSetEC) {
+					throw std::filesystem::filesystem_error(
+						"Error accessing current working directory",
+						current_working_directory_,
+						listSetEC
+					);
+				}
+				throw std::filesystem::filesystem_error(
+					"Current working directory is not a valid directory",
+					current_working_directory_,
+					std::make_error_code(std::errc::not_a_directory)
+				);
+			}
+			
+			for (const auto& entry : std::filesystem::directory_iterator(current_working_directory_)) {
+				if (entry.is_regular_file()) {
+					file_list.push_back(entry.path());
+				}
+			}
+		} catch (const std::filesystem::filesystem_error& newErr) {
+			std::cerr << "Error populating file list: " << newErr.what() << std::endl;
+			if (!newErr.path1().empty()) {
+				std::cerr << " Path: " << newErr.path1().string() << std::endl;
+			}
+			file_list.clear();
+		}
 		
-		return 0;
+		return file_list.size();
 	}
 
     // Operations functions
