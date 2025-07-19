@@ -40,8 +40,8 @@ namespace photo {
 			//TODO: functions to actually start creating folders and moving files
 			//Note: use void? or find some better way?
 			void createDirectory(std::string dirName);	//dirName is meant to specify a sort type, i.e format, shot date, etc
-			void movePhoto(std::filesystem::path destination);
-      		void movePhoto(std::filesystem::path destination, std::string name);
+			void movePhoto(std::filesystem::path& destination);
+      		void movePhoto(std::filesystem::path& destination, std::string name);
 
 		private:
 			std::filesystem::path root_directory_;

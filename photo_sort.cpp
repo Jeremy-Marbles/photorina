@@ -260,26 +260,79 @@ namespace photo {
 		}
     }
 
-	void photoSorter::movePhoto(std::filesystem::path destination) {	
+	void photoSorter::movePhoto(std::filesystem::path& destination) {	
 		//this command assumes a set condition was made for what files are specified, EX. given file_name_ in the private variables
-      	try 
+    	if (file_path_.empty()) {
+        	std::cerr << "Error: No file has been set to move. Set current file using setCurrentListedFile()";
+        	return;
+      	}
+
+      	try
       	{
-        	std::error_code moveErrCWD;
-        	if (!std::filesystem::exists(current_working_directory_, moveErrCWD)) {
-            	throw std::filesystem::filesystem_error(
-                "Error finding set CWD: " + current_working_directory_.string(),
-                moveErrCWD);
+        	std::error_code moveFileErr;
+        	if(!std::filesystem::is_directory(destination, moveFileErr)){
+          		if (moveFileErr) {
+            		throw std::filesystem::filesystem_error("Error checking destination path", destination, moveFileErr);
+          	}
+          	throw std::filesystem::filesystem_error("Destination is not a valid directory", destination,
+            	std::make_error_code(std::errc::not_a_directory));
         	}
-      	}
-      	catch (const std::filesystem::filesystem_error& moveErrCWD)
-      	{
 
-      	}
+        	const auto destinationPath = destination / file_path_.filename();
+        	std::filesystem::rename(file_path_, destinationPath, moveFileErr);
 
+			if (moveFileErr) {
+				throw std::filesystem::filesystem_error("Failed to move file", file_path_, destinationPath, moveFileErr);
+			}
+
+			std::cout << "Moved: '" << file_path_.string() << "' to '" << destinationPath.string() << "'" << std::endl;
+
+			file_path_.clear();
+			file_name.clear();
+        
+        //todo: use setFileList to match actual directory structure
+        	setFileList();
+      	} catch (const std::filesystem::filesystem_error& newErr) {
+			std::cerr << "Error moving file: " << newErr.what() << std::endl;
+			if (!newErr.path1().empty()) { std::cerr << " Source: " << newErr.path1().string() << std::endl; }
+			if (!newErr.path2().empty()) { std::cerr << " Destination: " << newErr.path2().string() << std::endl; }
+		  }
     }
 
-	void photoSorter::movePhoto(std::filesystem::path destination, std::string name) {
+	void photoSorter::movePhoto(std::filesystem::path& destination, std::string name) {
+		//debug: std::cout << "movePhoto: " << sourcePath.string() << " to " << destination.string() << std::endl;"
+		try {
+      const auto sourcePath = current_working_directory_ / name;
+      std::error_code moveDestErr;
 
-    }
+      if (!std::filesystem::exists(sourcePath, moveDestErr)) {
+        if (moveDestErr) {
+          throw std::filesystem::filesystem_error("Error checking existance of source file.", sourcePath, moveDestErr);
+        }
+        throw std::filesystem::filesystem_error("Source file does not exist.", sourcePath, std::make_error_code(std::errc::no_such_file_or_directory));
+      }
+      
+      if (!std::filesystem::is_directory(destination, moveDestErr)) {
+        if (moveDestErr) {
+          throw std::filesystem::filesystem_error("Error checking existance of destination path.", destination, moveDestErr);
+        }
+        throw std::filesystem::filesystem_error("Destination is not a valid directory.", destination, std::make_error_code(std::errc::not_a_directory));
+      }
+
+      const auto destinationPath = destination / name;
+      std::filesystem::rename(sourcePath, destinationPath, moveDestErr);
+
+      if (moveDestErr) {
+        throw std::filesystem::filesystem_error("Failed to move file. ", sourcePath, destinationPath, moveDestErr); 
+      }
+
+      std::cout << "Successfully moved '" << sourcePath.string() << "' to '" << destinationPath.string() << std::endl;
+
+		} catch (const std::filesystem::filesystem_error& newError) {
+			std::cerr << "Error moving file: " << newError.what() << std::endl;
+			if (!newError.path1().empty()) { std::cerr << " Source: " << newError.path1().string() << std::endl; }
+			if (!newError.path2().empty()) { std::cerr << " Destination: " << newError.path2().string() << std::endl; }
+		}
+	}
 }
 
