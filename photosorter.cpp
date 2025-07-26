@@ -97,6 +97,8 @@ int unitTest_operators() //test 3
     
   	//Add a print out for all files in the directory
 	newOrganizer3.setFileList();
+
+	newOrganizer3.printFileList();
 	
 	return 0;
 }

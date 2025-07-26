@@ -42,7 +42,14 @@ namespace photo {
 			void createDirectory(std::string dirName);	//dirName is meant to specify a sort type, i.e format, shot date, etc
 			void movePhoto(std::filesystem::path& destination);
       		void movePhoto(std::filesystem::path& destination, std::string name);
-
+			
+			void printFileList() const {
+				std::cout << "Files in directory: " << current_working_directory_.string() << std::endl;
+				for (const auto& file : file_list) {
+					std::cout << file.string() << std::endl;
+				}
+			}
+			
 		private:
 			std::filesystem::path root_directory_;
 			std::filesystem::path current_working_directory_;
@@ -62,6 +69,9 @@ namespace photo {
 			//private function to print out directory structure for CLI. will be changed if GUI application is made
 
 			std::vector<std::filesystem::path> file_list;
+
+		
+
 		};
 	};
 
