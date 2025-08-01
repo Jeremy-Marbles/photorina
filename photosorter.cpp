@@ -23,6 +23,7 @@
  * */
 
 #include "photo_sort.h"
+#include "photosorter_settings.h"
 
 #include <iostream>
 #include <string>
@@ -99,6 +100,13 @@ int unitTest_operators() //test 3
 	newOrganizer3.setFileList();
 
 	newOrganizer3.printFileList();
+
+    newOrganizer.setCurrentListedFile("New Text Document.txt");
+
+    //TODO: get elevated folder details as the only way to receive new folder is by explicit redirect
+    //std::filesystem::path practice = newOrganizer3.switchCWD(
+
+    newOrganizer.movePhoto(
 	
 	return 0;
 }
