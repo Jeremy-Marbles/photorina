@@ -104,9 +104,7 @@ int unitTest_operators() //test 3
     newOrganizer.setCurrentListedFile("New Text Document.txt");
 
     //TODO: get elevated folder details as the only way to receive new folder is by explicit redirect
-    //std::filesystem::path practice = newOrganizer3.switchCWD(
-
-    newOrganizer.movePhoto(
+    //std::filesystem::path practice = newOrganizer3.switchCWD()
 	
 	return 0;
 }

@@ -54,8 +54,9 @@ namespace photo {
 			std::filesystem::path root_directory_;
 			std::filesystem::path current_working_directory_;
 			std::filesystem::path file_path_;
+            std::filesystem::path folder_path_;             //when creating a new folder using createDirectory and needed to redirect to it
 
-			std::string file_name;	//
+			std::string file_name;	
 			std::atomic<std::uint32_t> num_files;	//number of files in a folder structure, directories also count as files
 			int *file_position;	//thread specific file position
 			
@@ -69,8 +70,6 @@ namespace photo {
 			//private function to print out directory structure for CLI. will be changed if GUI application is made
 
 			std::vector<std::filesystem::path> file_list;
-
-		
 
 		};
 	};
