@@ -33,7 +33,7 @@
 #include <mutex>
 #include <filesystem> //https://en.cppreference.com/w/cpp/filesystem
 
-int unitTest_constructor() //test 1 passed
+int unitTest_constructor() //test 1 complete
 {
 	const std::filesystem::path userDirectory = "C:\\";
 	photo::photoSorter newOrganizer ( userDirectory );
@@ -85,7 +85,7 @@ int unitTest_getters() //test 2 complete
 	return 0;
 }
 
-int unitTest_operators() //test 3
+int unitTest_operators() //test 3 complete: 1 single file is moved to the new folder
 {
 	const std::filesystem::path mainDirectory = "C:\\";
 	photo::photoSorter newOrganizer3 ( mainDirectory );
@@ -101,12 +101,31 @@ int unitTest_operators() //test 3
 
 	newOrganizer3.printFileList();
 
-    newOrganizer.setCurrentListedFile("New Text Document.txt");
+    newOrganizer3.setCurrentListedFile("New Text Document.txt");
 
     //TODO: get elevated folder details as the only way to receive new folder is by explicit redirect
-    //std::filesystem::path practice = newOrganizer3.switchCWD()
+    std::filesystem::path practice = newOrganizer3.getNewFolder();
 	
+    newOrganizer3.movePhoto(practice);
+
 	return 0;
+}
+
+int unittest_multiple() //test 4: use vector to automate multiple files 
+{
+    photo::photoSorter newOrganizer4;
+    std::cout << newOrganizer4.getRoot() << std::endl;
+    
+    const std::filesystem::path testDir = "C:\\users\\marbl\\desktop\\photorina test folder\\";
+    
+    newOrganizer4.createDirectory("Unit 4");
+
+    newOrganizer4.setFileList();
+    newOrganizer4.printFileList();
+
+
+    
+    return 0;
 }
 
 int main(int argc, char *argv[])

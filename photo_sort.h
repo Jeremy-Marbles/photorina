@@ -24,13 +24,16 @@ namespace photo {
 			std::string getFileName();
 			std::string getFilePath();
 			std::uint32_t getNumFiles();
+			std::string getRoot();
 			std::string getCWD();
+			std::filesystem::path getNewFolder();
 
 			std::string getFilesInDirectory(std::filesystem::path& directory); //https://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
 			
 			std::string switchCWD(const std::filesystem::path& workingDirectory); //main function to get folder/directory of photos that are stored
 			std::string switchRoot(const std::string directorySwitch); 	//TODO: figure out how linux does root directory on a different drive that is not main.
 							//EX: drive letter are used for root on Windows (C:, E:, etc)
+            std::filesystem::path switchFolder();
 			uint32_t setNumFiles();	//set number of files based off current_working_directory_
 			int setCurrentListedFile(std::string fileName);
 			int setCurrentListedFilePATH(std::filesystem::path directFilePath);
@@ -40,6 +43,7 @@ namespace photo {
 			//TODO: functions to actually start creating folders and moving files
 			//Note: use void? or find some better way?
 			void createDirectory(std::string dirName);	//dirName is meant to specify a sort type, i.e format, shot date, etc
+			//TODO: createDirectory overload to accept a path object, using string name
 			void movePhoto(std::filesystem::path& destination);
       		void movePhoto(std::filesystem::path& destination, std::string name);
 			
@@ -49,7 +53,12 @@ namespace photo {
 					std::cout << file.string() << std::endl;
 				}
 			}
-			
+
+			void multiTransfer();
+        
+        protected:
+            std::filesystem::path fileListSpot(int position);
+
 		private:
 			std::filesystem::path root_directory_;
 			std::filesystem::path current_working_directory_;

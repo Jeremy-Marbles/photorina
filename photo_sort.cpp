@@ -77,13 +77,21 @@ namespace photo {
 		return num_files.load();
     }
 
+	std::string photoSorter::getRoot()  {
+		return root_directory_.string();
+	}
+
     std::string photoSorter::getCWD() {
 		return current_working_directory_.string();
     }
 
+	std::filesystem::path photoSorter::getNewFolder() {
+		return folder_path_;
+	}
+
 	std::string photoSorter::getFilesInDirectory(std::filesystem::path& directory) {
 		for (const auto & entry : std::filesystem::directory_iterator(directory)) {
-			std::cout << entry.path() << std::endl;
+			std::cout << entry.path().string() << std::endl;
 		}
 
 		return "Completed listing files in directory: " + directory.string();
@@ -94,16 +102,21 @@ namespace photo {
 		current_working_directory_ = workingDirectory;
 		return current_working_directory_.string();
     }
-    
-    std::string photoSorter::switchRoot(const std::string directorySwitch) {
+    		
 		//This function will assume that directory to be worked in is on a different hard drive 
+    std::string photoSorter::switchRoot(const std::string directorySwitch) {
 		root_directory_ = directorySwitch;
 		return root_directory_.string();
     }
 
-	
-	uint32_t photoSorter::setNumFiles() {
+	//TODO: find a better way to handle folder switching
+	/*std::filesystem::path photoSorter::switchFolder() {
+
+		return folder_path_;
+	}*/
+
 		//sets the number of files in the current working directory only
+	uint32_t photoSorter::setNumFiles() {
 		num_files = std::distance(std::filesystem::directory_iterator(current_working_directory_), std::filesystem::directory_iterator());
 		return num_files;
 	}
@@ -245,8 +258,10 @@ namespace photo {
 		{
 			if (std::filesystem::create_directory(newDirPath)) {
 				std::cout << "Directory created successfully: " << newDirPath.string() << std::endl;
+				folder_path_ = newDirPath; // Update folder_path_ to the newly created directory
 			} else {
 				std::cout << "Directory already exists or could not be created: " << newDirPath.string() << std::endl;
+				folder_path_ = newDirPath;
 			}
 		} catch (const std::filesystem::filesystem_error& e)
 		{
@@ -333,6 +348,17 @@ namespace photo {
 			if (!newError.path1().empty()) { std::cerr << " Source: " << newError.path1().string() << std::endl; }
 			if (!newError.path2().empty()) { std::cerr << " Destination: " << newError.path2().string() << std::endl; }
 		}
+	}
+
+	std::filesystem::path photoSorter::fileListSpot(int position) {
+		if (position < 0 || position >= static_cast<int>(file_list.size())) {
+			throw std::out_of_range("Position is out of range of the file list.");
+		}
+		return file_list[position];
+	}
+
+	void photoSorter::multiTransfer() {
+		
 	}
 }
 
