@@ -354,11 +354,28 @@ namespace photo {
 		if (position < 0 || position >= static_cast<int>(file_list.size())) {
 			throw std::out_of_range("Position is out of range of the file list.");
 		}
+
 		return file_list[position];
 	}
 
+    void photoSorter::multiMoveHelper(const std::filesystem::path& destination,
+                                      std::queue<std::filesystem::path>& work_queue,
+                                      std::mutex& queue_mutex,
+                                      std::mutex& cout_mutex,
+                                      std::atomic<int>& success_count,
+                                      std::atomic<int>& error_count){
+        while (true) {
+
+        }
+    }
+
 	void photoSorter::multiTransfer() {
-		
+	    if (file_list.empty()) {
+            std::cerr << "File list vector has not been initiated" << std::endl;
+            return;
+        }
+        
+        
 	}
 }
 

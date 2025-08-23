@@ -4,12 +4,13 @@
 #include <atomic>
 #include <cstdint>
 #include <filesystem>
-#include <fstream>        //TODO: read txt file for settings
 #include <system_error>
 #include <stdexcept>
 #include <thread>
 #include <mutex>
 #include <vector>
+#include <queue>
+#include <functional>
 
 namespace photo {
 	class photoSorter {
@@ -79,7 +80,13 @@ namespace photo {
 			//private function to print out directory structure for CLI. will be changed if GUI application is made
 
 			std::vector<std::filesystem::path> file_list;
-
+            
+            void multiMoveHelper(const std::filesystem::path& destination,
+                                std::queue<std::filesystem::path>& work_queue,
+                                std::mutex& queue_mutex,
+                                std::mutex& cout_mutex,
+                                std::atomic<int>& success_count,
+                                std::atomic<int>& error_count);
 		};
 	};
 

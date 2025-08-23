@@ -111,7 +111,7 @@ int unitTest_operators() //test 3 complete: 1 single file is moved to the new fo
 	return 0;
 }
 
-int unittest_multiple() //test 4: use vector to automate multiple files 
+int unitTest_multiple() //test 4: use vector to automate multiple files 
 {
     photo::photoSorter newOrganizer4;
     std::cout << newOrganizer4.getRoot() << std::endl;
@@ -149,8 +149,8 @@ int main(int argc, char *argv[])
 
 	//unitTest_constructor();
 	//unitTest_getters();
-	unitTest_operators();
-
+	//unitTest_operators();
+    unitTest_multiple();
 	return 0;
 }
 
