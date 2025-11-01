@@ -30,19 +30,20 @@
 
 namespace photo {
 	class photoSort_settings {
-		private:
-			std::string cfgName;
-			std::ofstream cfgFile;
+
 			//std::map<std::string, std::string> settings;
 			//considerations for settings:
 			//https://stackoverflow.com/questions/142508/how-do-i-check-os-with-a-preprocessor-directive
 			//- set default working directory
 			//- set destination folder
-			//- 
-
+			//- set sort options
+            //- set file format to be sorted
 		
-			
-		public:
+		public:			
+			std::string cfgName;
+			std::ofstream cfgFile;
+			std::filesystem::path cfgPath = "settings.cfg";
+
 			photoSort_settings();
 			~photoSort_settings();
 
@@ -86,6 +87,6 @@ namespace photo {
 			std::filesystem::path createDir(std::string name);
 
 		protected:
-			photoSort_settings sortSettings_;
+			photoSort_settings sortSettings_ = photoSort_settings();
 	};	
 }

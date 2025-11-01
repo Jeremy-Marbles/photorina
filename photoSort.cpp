@@ -53,9 +53,10 @@ namespace photo {
 			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
 			return -1;
 		}
+	}
 
-	int photoSort_settings::modifySettings(int command){
-		if (!std:;filesystem::exists(cfgName)) {
+	int photoSort_settings::modifySettings(int command) {
+		if (!std::filesystem::exists(cfgName)) {
 			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
 			return -1;
 		}
@@ -188,11 +189,16 @@ namespace photo {
 	}
 
 	std::filesystem::path photoSort::setFolder(std::filesystem::path newPath) {
-		if (std::filesystem::is_directory(newPath)) {
-			CWD_ = newPath;
-		} else {
-			std::cerr << "Error: path is not a directory" << std::endl;
-		}
-		return CWD_;
+	    if (std::filesystem::is_directory(newPath)) {
+			if (std::filesystem::exists(sortSettings_.cfgPath)) {
+				sortSettings_.cfgFile.open(sortSettings_.cfgPath, std::ios::app);
+				
+			}
+            
+        }
+	}
+    
+    std::filesystem::path photoSort::setCWD_() {
+
 	}
 }
