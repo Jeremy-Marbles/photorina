@@ -20,13 +20,16 @@ namespace photo {
 				#else 
 					cfgFile << "OS=Unknown\n";
 				#endif
-				//TODO: add more default settings
+				//TODO: add more default setings
 				cfgFile << "\n";
-
-				cfgFile << "[Sorting]\n";
+				cfgFile << "[Directories]\n";
 				//Set default CWD to user's photo folder
 				cfgFile << "DefaultCWD=" << std::filesystem::path(std::getenv("HOME")) / "Pictures" << "\n";
+				cfgFile << "DefaultDestination=\n"; //Leave blank; ask user to fill in a specified path
+				cfgFile << "\n";
+				cfgFile << "[Sorting]\n";	//Set meta data file sorting.	
 				cfgFile.close();
+
 			} else {
 				std::cerr << "Error creating settings file!" << std::endl;
 			}
@@ -47,6 +50,12 @@ namespace photo {
 	//I.E. pull default CWD, destination folder, etc.
 	int photoSort_settings::loadSettings(int command) {
 		if (!std::filesystem::exists(cfgName)) {
+			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
+			return -1;
+		}
+
+	int photoSort_settings::modifySettings(int command){
+		if (!std:;filesystem::exists(cfgName)) {
 			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
 			return -1;
 		}

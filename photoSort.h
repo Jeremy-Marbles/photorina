@@ -47,6 +47,7 @@ namespace photo {
 			~photoSort_settings();
 
 			int loadSettings(int command);
+			int modifySettings(int command);
 
 			int makeNewCfg(std::string name);
 			int populateCfg(int command);
