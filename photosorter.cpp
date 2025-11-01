@@ -22,135 +22,13 @@
  * TODO: fstream library integration for txt settings/config file
  * */
 
-#include "photo_sort.h"
-#include "photosorter_settings.h"
+#include "photoSort.h"
 
-#include <iostream>
-#include <string>
-#include <atomic>
-#include <cstdint>
-#include <thread>
-#include <mutex>
-#include <filesystem> //https://en.cppreference.com/w/cpp/filesystem
-
-int unitTest_constructor() //test 1 complete
-{
-	const std::filesystem::path userDirectory = "C:\\";
-	photo::photoSorter newOrganizer ( userDirectory );
-	//newOrganizer.switchRoot(userDirectory);
-
-	const std::filesystem::path photoFolder = "C:\\users\\marbl\\pictures\\";
-	newOrganizer.switchCWD(photoFolder);
-
-	std::string printCWD = newOrganizer.getCWD();
-	printf("CWD: %s \n", printCWD.c_str());
-
-	//std::string fileName = newOrganizer.getFileName();
-	newOrganizer.setNumFiles();
-	std::atomic<uint32_t> fileNumber = newOrganizer.getNumFiles();
-	std::cout << " # files in directory: " << fileNumber.load() << std::endl;
-
-	std::string path = newOrganizer.getCWD();
-	for (const auto & entry : std::filesystem::directory_iterator(path)) {
-		std::cout << entry.path() << std::endl;
-
-	}
-
-	return 0;
-}
-
-int unitTest_getters() //test 2 complete
-{
-	const std::filesystem::path mainDirectory = "C:\\";
-	photo::photoSorter newOrganizer2 ( mainDirectory );
-
-	const std::filesystem::path photoFolder = "C:\\users\\marbl\\pictures\\";
-	newOrganizer2.switchCWD(photoFolder);
-	//std::cout << "File path: " << newOrganizer2.getFilePath() << std::endl;
-	
-	newOrganizer2.setNumFiles();
-	std::atomic<uint32_t> fileNumber = newOrganizer2.getNumFiles();
-	
-	std::cout << "# files: " << fileNumber.load() << std::endl;
-	std::cout << "CWD: " << newOrganizer2.getCWD() << std::endl;
-	
-	// Test getFileName 
-	newOrganizer2.setCurrentListedFile("DSC01803.JPG");	//FIXME:
-	std::cout << "Current listed file path: " << newOrganizer2.getFilePath() << std::endl;
-
-	// Test setCurrentListedFile error
-	//newOrganizer2.setCurrentListedFile("nonexistent_file.jpeg");
-	//std::cout << "File path: " << newOrganizer2.getFilePath() << std::endl;
-	
-	return 0;
-}
-
-int unitTest_operators() //test 3 complete: 1 single file is moved to the new folder
-{
-	const std::filesystem::path mainDirectory = "C:\\";
-	photo::photoSorter newOrganizer3 ( mainDirectory );
-	const std::filesystem::path testLibrary = "C:\\users\\marbl\\desktop\\photorina test folder\\";
-	newOrganizer3.switchCWD(testLibrary);
-	std::cout << "1. " << newOrganizer3.getCWD() << std::endl;
-	newOrganizer3.setNumFiles();
-
-  	newOrganizer3.createDirectory("genTest");
-    
-  	//Add a print out for all files in the directory
-	newOrganizer3.setFileList();
-
-	newOrganizer3.printFileList();
-
-    newOrganizer3.setCurrentListedFile("New Text Document.txt");
-
-    //TODO: get elevated folder details as the only way to receive new folder is by explicit redirect
-    std::filesystem::path practice = newOrganizer3.getNewFolder();
-	
-    newOrganizer3.movePhoto(practice);
-
-	return 0;
-}
-
-int unitTest_multiple() //test 4: use vector to automate multiple files 
-{
-    photo::photoSorter newOrganizer4;
-    std::cout << newOrganizer4.getRoot() << std::endl;
-    
-    const std::filesystem::path testDir = "C:\\users\\marbl\\desktop\\photorina test folder\\";
-    
-    newOrganizer4.createDirectory("Unit 4");
-
-    newOrganizer4.setFileList();
-    newOrganizer4.printFileList();
-
-
-    
-    return 0;
-}
 
 int main(int argc, char *argv[])
 {
-	/*
-	const std::filesystem::path userDirectory = "C:\\";
-	photo::photoSorter newOrganizer ( userDirectory );
-	//newOrganizer.switchRoot(userDirectory);
+	photo::photoSort sorter;
 
-	const std::filesystem::path photoFolder = "C:\\users\\marbl\\pictures\\";
-	newOrganizer.switchCWD(photoFolder);
-
-	std::string printCWD = newOrganizer.getCWD();
-	printf("CWD: %s \n", printCWD.c_str());
-
-	//std::string fileName = newOrganizer.getFileName();
-	newOrganizer.setNumFiles();
-	std::atomic<uint32_t> fileNumber = newOrganizer.getNumFiles();
-	std::cout << " # files in directory: " << fileNumber.load() << std::endl;
-	*/
-
-	//unitTest_constructor();
-	//unitTest_getters();
-	//unitTest_operators();
-    unitTest_multiple();
 	return 0;
 }
 
