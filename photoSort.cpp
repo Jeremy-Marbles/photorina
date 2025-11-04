@@ -3,10 +3,11 @@
 namespace photo {
 	//begin photoSort_settings
 	
-	photoSort_settings::photoSort_settings() : cfgName("settings.cfg"), cfgFile(cfgName){
+	photoSort_settings::photoSort_settings() : cfgName("settings.ini"), cfgFile(cfgName){
 		//TODO: check if cfg file exists in program folder
 		if (!std::filesystem::exists(cfgName)) {
-			std::cout << "Settings file not found. Creating default settings.cfg..." << std::endl;
+			std::cout << "Settings file not found. Creating default settings.ini..." << std::endl;
+			//TODO: create default config file
 			cfgFile.open(cfgName);
 
 			if (cfgFile.is_open()) {
@@ -28,6 +29,7 @@ namespace photo {
 				cfgFile << "DefaultDestination=\n"; //Leave blank; ask user to fill in a specified path
 				cfgFile << "\n";
 				cfgFile << "[Sorting]\n";	//Set meta data file sorting.	
+				cfgFile << "SortByDate=true\n";
 				cfgFile.close();
 
 			} else {
@@ -61,7 +63,7 @@ namespace photo {
 			return -1;
 		}
 	}
-
+	// end photoSort_settings
 
 	// begin photoSort  
 	// Constructors (or just constructor)
@@ -188,17 +190,41 @@ namespace photo {
 		}
 	}
 
+	//Writes destination folder in settings.cfg
 	std::filesystem::path photoSort::setFolder(std::filesystem::path newPath) {
-	    if (std::filesystem::is_directory(newPath)) {
+		if (std::filesystem::is_directory(newPath)) {
 			if (std::filesystem::exists(sortSettings_.cfgPath)) {
-				sortSettings_.cfgFile.open(sortSettings_.cfgPath, std::ios::app);
-				
+				sortSettings_.cfgFile.open(sortSettings_.cfgPath);
+				//TODO: check if "DefaultDestination" line exists; if so, overwrite instead of appending
+				sortSettings_.cfgFile << "DefaultDestination=" << newPath.string() << '\n';			
+				sortSettings_.cfgFile.close();
+			
 			}
             
         }
+		
+		return; //TODO: return current path if fails
 	}
     
-    std::filesystem::path photoSort::setCWD_() {
+
+	std::filesystem::path photoSort::setCWD_(std::string folder) {
+		if (std::filesystem::exists(sortSettings_.cfgPath)) {
+			sortSettings_.cfgFile.open(sortSettings_.cfgPath); 
+			//TODO: check if "DefaultCWD" line exists; if so, overwrite instead of appending
+			sortSettings_.cfgFile << "DefaultCWD=" << folder << '\n';
+			sortSettings_.cfgFile.close();
+
+			CWD_ = std::filesystem::path(folder);
+
+			//Get new CWD info and place it into the vector
+			populateCWD_Vector();
+
+			return CWD_;
+
+		}
+	}
+
+	std::filesystem::path photoSort::createDir(std::string name) {
 
 	}
 }

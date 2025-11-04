@@ -23,6 +23,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <fstream>
+//include https://github.com/benhoyt/inih for ini parsing
 
 //TODO: global error handling
 //ie for missing file vs bad file
@@ -36,13 +37,15 @@ namespace photo {
 			//https://stackoverflow.com/questions/142508/how-do-i-check-os-with-a-preprocessor-directive
 			//- set default working directory
 			//- set destination folder
-			//- set sort options
-            //- set file format to be sorted
+            //- set file format to be sorted (e.g., .jpg, .png, .raw)
+			//- set raw formats to be sorted (e.g., .cr2, .nef, .arw)
+			//- set camera model filters (Sony, Canon, Nikon, etc)
+			//- set date range filters
 		
 		public:			
 			std::string cfgName;
 			std::ofstream cfgFile;
-			std::filesystem::path cfgPath = "settings.cfg";
+			std::filesystem::path cfgPath = "settings.ini";
 
 			photoSort_settings();
 			~photoSort_settings();
@@ -82,7 +85,6 @@ namespace photo {
 			void multiMove(std::filesystem::path toMove, int command);
 			
 			std::filesystem::path setFolder(std::filesystem::path newPath);
-			std::filesystem::path setCWD_();
 			std::filesystem::path setCWD_(std::string folder);
 			std::filesystem::path createDir(std::string name);
 
