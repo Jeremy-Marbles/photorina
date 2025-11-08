@@ -55,6 +55,8 @@ namespace photo {
 			int modifySettings(int command);
 
 			int populateCfg(int command);
+
+			int addCamera(int dropDown);
 	};
 
 	class photoSort {

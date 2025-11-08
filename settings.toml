@@ -10,7 +10,7 @@ ByDate = true
 ByFormat = false
 ByCameraModel = false
 
-[Meta]	#Camera specific metadata settings
+[[Cameras]]	#Camera specific metadata settings
 CameraBrand =
 CameraModel = 
 RAWFormat = 

@@ -35,7 +35,7 @@ namespace photo {
 				cfgFile << "ByFormat = false\n";
 				cfgFile << "ByCameraModel = false\n";
 
-				cfgFile << "[Meta]\n";	//Meta data for camera specific items
+				cfgFile << "[[Cameras]]\n";	//Meta data for camera specific items; array of tables for users of multiple cameras
 				cfgFile << "CameraBrand = \n";
 				cfgFile << "CameraModel = \n";
 				cfgFile << "RAWFormat = \n";
@@ -72,6 +72,20 @@ namespace photo {
 	}
 
 	int photoSort_settings::modifySettings(int command) {
+		if (!std::filesystem::exists(cfgName)) {
+			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
+			return -1;
+		}
+	}
+
+	int photoSort_settings::populateCfg(int command) {
+		if (!std::filesystem::exists(cfgName)) {
+			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
+			return -1;
+		}
+	}
+
+	int photoSort_settings::addCamera(int dropDown) {
 		if (!std::filesystem::exists(cfgName)) {
 			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
 			return -1;
@@ -253,6 +267,6 @@ namespace photo {
 			std::cerr << "Error creating directory: " << createErr.what() << std::endl;
 		}
 
-		return -1;
+		return;
 	}
 }
