@@ -2,39 +2,53 @@
 
 namespace photo {
 	//begin photoSort_settings
-	
-	photoSort_settings::photoSort_settings() : cfgName("settings.ini"), cfgFile(cfgName){
+
+	photoSort_settings::photoSort_settings() : cfgName("settings.toml"), cfgFile(cfgName){
 		//TODO: check if cfg file exists in program folder
 		if (!std::filesystem::exists(cfgName)) {
-			std::cout << "Settings file not found. Creating default settings.ini..." << std::endl;
-			//TODO: create default config file
+			std::cout << "Settings file not found. Creating default settings.toml..." << std::endl;
+			//create default config file in TOML format
+			std::ofstream defaultConfig("settings.toml");
+
 			cfgFile.open(cfgName);
 
 			if (cfgFile.is_open()) {
 				cfgFile << "[System]\n";
 				#if defined(_WIN32_) || defined(_WIN64_)
-					cfgFile << "OS=Windows\n";
+					cfgFile << "OS = Windows\n";
 				#elif defined(__linux__) || defined(__LINUX)
-					cfgFile << "OS=Linux\n";
+					cfgFile << "OS = Linux\n";
 				#elif defined(__APPLE__) || defined(__MACH__)
-					cfgFile << "OS=MacOS\n";
+					cfgFile << "OS = MacOS\n";
 				#else 
-					cfgFile << "OS=Unknown\n";
+					cfgFile << "OS = Unknown\n";
 				#endif
 				//TODO: add more default setings
 				cfgFile << "\n";
 				cfgFile << "[Directories]\n";
 				//Set default CWD to user's photo folder
-				cfgFile << "DefaultCWD=" << std::filesystem::path(std::getenv("HOME")) / "Pictures" << "\n";
-				cfgFile << "DefaultDestination=\n"; //Leave blank; ask user to fill in a specified path
+				cfgFile << "DefaultCWD = " << std::filesystem::path(std::getenv("HOME")) / "Pictures" << "\n";
+				cfgFile << "DefaultDestination = \n"; //Leave blank; ask user to fill in a specified path
 				cfgFile << "\n";
-				cfgFile << "[Sorting]\n";	//Set meta data file sorting.	
-				cfgFile << "SortByDate=true\n";
+				cfgFile << "[Sorting]\n";	//Toggle meta data file sorting options.	
+				cfgFile << "ByDate = true\n";
+				cfgFile << "ByFormat = false\n";
+				cfgFile << "ByCameraModel = false\n";
+
+				cfgFile << "[Meta]\n";	//Meta data for camera specific items
+				cfgFile << "CameraBrand = \n";
+				cfgFile << "CameraModel = \n";
+				cfgFile << "RAWFormat = \n";
+
 				cfgFile.close();
 
 			} else {
 				std::cerr << "Error creating settings file!" << std::endl;
 			}
+		} else if (std::filesystem::exists(cfgName)) {
+			//detect system, initiate default parameters
+			//use toml parser for this part
+			cfgFile.open(cfgName);
 		}
 
 
@@ -201,7 +215,7 @@ namespace photo {
 			
 			}
             
-        }
+        	}
 		
 		return; //TODO: return current path if fails
 	}
@@ -224,7 +238,21 @@ namespace photo {
 		}
 	}
 
+	//creates a directory on the CWD
 	std::filesystem::path photoSort::createDir(std::string name) {
+		try {
+			std::filesystem::path createNew = name;
+			if (std::filesystem::create_directory(name)) {
+				std::cout << "Create " << name << std::endl;
+			} else {
+				std::cout << "Name already exists in directory!" << std::endl;
+			}
 
+			return createNew;
+		} catch (std::filesystem::filesystem_error createErr) {
+			std::cerr << "Error creating directory: " << createErr.what() << std::endl;
+		}
+
+		return -1;
 	}
 }

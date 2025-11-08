@@ -1,0 +1,16 @@
+[System]
+OS = 
+
+[Directories]
+DefaultCWD =
+DefaultDestination = 
+
+[Sorting]
+ByDate = true
+ByFormat = false
+ByCameraModel = false
+
+[Meta]	#Camera specific metadata settings
+CameraBrand =
+CameraModel = 
+RAWFormat = 

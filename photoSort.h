@@ -23,7 +23,8 @@
 #include <cassert>
 #include <cstdlib>
 #include <fstream>
-//include https://github.com/benhoyt/inih for ini parsing
+//include https://github.com/marzer/tomlplusplus for toml parsing
+
 
 //TODO: global error handling
 //ie for missing file vs bad file
@@ -45,7 +46,7 @@ namespace photo {
 		public:			
 			std::string cfgName;
 			std::ofstream cfgFile;
-			std::filesystem::path cfgPath = "settings.ini";
+			std::filesystem::path cfgPath = "settings.toml";
 
 			photoSort_settings();
 			~photoSort_settings();
@@ -53,7 +54,6 @@ namespace photo {
 			int loadSettings(int command);
 			int modifySettings(int command);
 
-			int makeNewCfg(std::string name);
 			int populateCfg(int command);
 	};
 
