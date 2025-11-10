@@ -256,7 +256,7 @@ namespace photo {
 	std::filesystem::path photoSort::createDir(std::string name) {
 		try {
 			std::filesystem::path createNew = name;
-			if (std::filesystem::create_directory(name)) {
+			if (std::filesystem::create_directory(createNew)) {
 				std::cout << "Create " << name << std::endl;
 			} else {
 				std::cout << "Name already exists in directory!" << std::endl;
@@ -265,8 +265,10 @@ namespace photo {
 			return createNew;
 		} catch (std::filesystem::filesystem_error createErr) {
 			std::cerr << "Error creating directory: " << createErr.what() << std::endl;
+			std::cerr << "Path: " << createErr.path1().string() << std::endl;
+			return std::filesystem::path();
 		}
 
-		return;
+		return std::filesystem::path();
 	}
 }
