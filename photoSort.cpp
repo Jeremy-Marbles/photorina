@@ -8,22 +8,57 @@ namespace photo {
 		if (!std::filesystem::exists(cfgName)) {
 			std::cout << "Settings file not found. Creating default settings.toml..." << std::endl;
 			//create default config file in TOML format
-			std::ofstream defaultConfig("settings.toml");
+			toml::table defaultConfig;
 
-			cfgFile.open(cfgName);
+			std::string os_string;
+			#if defined(_WIN32_) || defined(_WIN64_)
+				os_string = "OS = Windows\n";
+			#elif defined(__linux__) || defined(__LINUX)
+				os_string = "OS = Linux\n";
+			#elif defined(__APPLE__) || defined(__MACH__)
+				os_string = "OS = MacOS\n";
+			#else 
+				os_string = "OS = Unknown\n";
+			#endif
 
-			if (cfgFile.is_open()) {
-				cfgFile << "[System]\n";
-				#if defined(_WIN32_) || defined(_WIN64_)
-					cfgFile << "OS = Windows\n";
-				#elif defined(__linux__) || defined(__LINUX)
-					cfgFile << "OS = Linux\n";
-				#elif defined(__APPLE__) || defined(__MACH__)
-					cfgFile << "OS = MacOS\n";
-				#else 
-					cfgFile << "OS = Unknown\n";
-				#endif
-				//TODO: add more default setings
+			std::string homeDir = std::getenv("HOME") ? std::getenv("HOME") : std::getenv("USERPROFILE");
+			std::filesystem::path picturesDir = std::filesystem::path(homeDir) / "Pictures";
+	
+			toml::array cameras;
+			cameras.push_back(toml::table{
+				{"CameraBrand", ""},
+				{"CameraModel", ""},
+				{"RAWFormat", toml::array{}}
+			});
+	
+			defaultConfig.insert("System", toml::table{ {"OS", os_string} });
+			defaultConfig.insert("Directories", toml::table{
+				{"DefaultCWD", picturesDir.string()},
+				{"DefaultDestination", ""}
+			});
+			defaultConfig.insert("Sorting",toml::table{
+				{"ByDate", true},
+				{"ByFormat", false},
+				{"ByCameraModel", false},
+				{"ByOtherMeta", false}
+			});
+			defaultConfig.insert("Metadata", toml::table{
+				{"LensModel", ""},
+				{"ExposureLevel", ""},
+				{"Location", ""},
+				{"Orientation", ""},
+				{"Parameter", false}
+			});
+			defaultConfig.insert("Cameras", cameras);
+			try {
+				std::ofstream cfgFileStream(cfgName);
+				cfgFileStream << toml::toml_formatter(defaultConfig);
+				cfgFileStream.close();
+				std::cout << "Default settings.toml created successfully." << std::endl;
+			} catch (const std::ofstream::failure& createErr) {
+				std::cerr << "Error creating settings file: " << createErr.what() << std::endl;
+			}
+/* 				//TODO: add more default setings
 				cfgFile << "\n";
 				cfgFile << "[Directories]\n";
 				//Set default CWD to user's photo folder
@@ -44,18 +79,66 @@ namespace photo {
 
 			} else {
 				std::cerr << "Error creating settings file!" << std::endl;
-			}
+			} */
 		} else if (std::filesystem::exists(cfgName)) {
 			//detect system, initiate default parameters
-			//use toml parser for this part
+			//use toml parser for this part (toml.hpp)
 			cfgFile.open(cfgName);
+
+			toml::table config = toml::parse_file("settings.toml");
+			toml::table* systemTable = config["System"].as_table();
+			if (systemTable) {
+				std::string os = (*systemTable)["OS"].value_or("Unknown");
+				std::cout << "Detected OS: " << os << std::endl;
+			} else {
+				//handle missing system table
+				std::cerr << "Warning: 'System' table missing in settings.toml." << std::endl;
+				//create default system table
+				toml::table defaultSystemTable;
+				std::string os_string;
+				#if defined(_WIN32_) || defined(_WIN64_)
+					os_string = "OS = Windows\n";
+				#elif defined(__linux__) || defined(__LINUX)
+					os_string = "OS = Linux\n";
+				#elif defined(__APPLE__) || defined(__MACH__)
+					os_string = "OS = MacOS\n";
+				#else 
+					os_string = "OS = Unknown\n";
+				#endif
+				defaultSystemTable.insert("OS", os_string);
+				config.insert("System", defaultSystemTable);
+				// Optionally, write back to file
+				std::ofstream cfgFileStream(cfgName);
+				cfgFileStream << toml::toml_formatter(config);
+				cfgFileStream.close();
+				std::cout << "Default 'System' table created in settings.toml." << std::endl;
+			}
+
+			toml::table* dirTable = config["Directories"].as_table();
+			// If table exists, pull default CWD and destination; otherwise, use fallback values and warn user
+			if (dirTable) {
+				std::string defaultCWD = (*dirTable)["DefaultCWD"].value_or("");
+				std::string defaultDest;
+				if (dirTable->contains("DefaultDestination")) {
+					defaultDest = (*dirTable)["DefaultDestination"].value_or("");
+				} else {
+						defaultDest = "";
+						std::cerr << "Warning: 'DefaultDestination' key not found in Directories table." << std::endl;
+					}
+				std::cout << "Default CWD: " << defaultCWD << std::endl;
+			} else {
+				std::cerr << "Warning: 'Directories' table missing in settings.toml. Using fallback values." << std::endl;
+				std::string defaultCWD = "";
+				std::string defaultDest = "";
+				// Optionally, set defaultCWD to user's Pictures folder as fallback
+				std::string homeDir = std::getenv("HOME") ? std::getenv("HOME") : std::getenv("USERPROFILE");
+				std::filesystem::path picturesDir = std::filesystem::path(homeDir) / "Pictures";
+				defaultCWD = picturesDir.string();
+				std::cout << "Fallback Default CWD: " << defaultCWD << std::endl;
+			}
 		}
 
-
-		//Close file if open, somehow
-		if(cfgFile.is_open()) {
-			cfgFile.close();
-		}
+		cfgFile.close();
 	}
 
 	photoSort_settings::~photoSort_settings() {
@@ -76,6 +159,9 @@ namespace photo {
 			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
 			return -1;
 		}
+
+		//command 1: set default destination path
+
 	}
 
 	int photoSort_settings::populateCfg(int command) {

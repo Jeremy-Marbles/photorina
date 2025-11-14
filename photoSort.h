@@ -24,7 +24,7 @@
 #include <cstdlib>
 #include <fstream>
 //include https://github.com/marzer/tomlplusplus for toml parsing
-
+#include "Resources/toml.hpp"
 
 //TODO: global error handling
 //ie for missing file vs bad file
@@ -38,7 +38,7 @@ namespace photo {
 			//https://stackoverflow.com/questions/142508/how-do-i-check-os-with-a-preprocessor-directive
 			//- set default working directory
 			//- set destination folder
-            //- set file format to be sorted (e.g., .jpg, .png, .raw)
+            		//- set file format to be sorted (e.g., .jpg, .png, .raw)
 			//- set raw formats to be sorted (e.g., .cr2, .nef, .arw)
 			//- set camera model filters (Sony, Canon, Nikon, etc)
 			//- set date range filters

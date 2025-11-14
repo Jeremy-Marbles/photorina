@@ -9,8 +9,21 @@ DefaultDestination =
 ByDate = true
 ByFormat = false
 ByCameraModel = false
+ByOtherMeta = false     #direct to other specific metadata
+
+[Metadata]  #multiple options can be organized once `ByOtherMeta` is true
+LensModel = 
+ExposureLevel = 
+Location = 
+Orientation = 
+Parameter = false   #GO TO [Parameter] table
+
+[Parameter]
+Metering =
+
 
 [[Cameras]]	#Camera specific metadata settings
 CameraBrand =
 CameraModel = 
 RAWFormat = 
+
