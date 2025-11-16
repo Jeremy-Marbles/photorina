@@ -7,7 +7,7 @@ Open-source automated file mover specialized for organizing image file formats.
 - Create folders/directories directly while moving files
 - Automate sorting with filters for camera, date, and other metadata.
 
-Dependencies used: tomlc++
+Dependencies used: [toml++ by marzer](https://marzer.github.io/tomlplusplus/index.html)
 
 _____________________________________
 
