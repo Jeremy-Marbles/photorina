@@ -58,28 +58,7 @@ namespace photo {
 			} catch (const std::ofstream::failure& createErr) {
 				std::cerr << "Error creating settings file: " << createErr.what() << std::endl;
 			}
-/* 				//TODO: add more default setings
-				cfgFile << "\n";
-				cfgFile << "[Directories]\n";
-				//Set default CWD to user's photo folder
-				cfgFile << "DefaultCWD = " << std::filesystem::path(std::getenv("HOME")) / "Pictures" << "\n";
-				cfgFile << "DefaultDestination = \n"; //Leave blank; ask user to fill in a specified path
-				cfgFile << "\n";
-				cfgFile << "[Sorting]\n";	//Toggle meta data file sorting options.	
-				cfgFile << "ByDate = true\n";
-				cfgFile << "ByFormat = false\n";
-				cfgFile << "ByCameraModel = false\n";
 
-				cfgFile << "[[Cameras]]\n";	//Meta data for camera specific items; array of tables for users of multiple cameras
-				cfgFile << "CameraBrand = \n";
-				cfgFile << "CameraModel = \n";
-				cfgFile << "RAWFormat = \n";
-
-				cfgFile.close();
-
-			} else {
-				std::cerr << "Error creating settings file!" << std::endl;
-			} */
 		} else if (std::filesystem::exists(cfgName)) {
 			//detect system, initiate default parameters
 			//use toml parser for this part (toml.hpp)
@@ -136,6 +115,8 @@ namespace photo {
 				defaultCWD = picturesDir.string();
 				std::cout << "Fallback Default CWD: " << defaultCWD << std::endl;
 			}
+
+			//TODO: metadata handling
 		}
 
 		cfgFile.close();
@@ -171,10 +152,48 @@ namespace photo {
 		}
 	}
 
+	//Two overloads for adding camera info for the following:
+	//pull camera info from metadata read-from-file
+	//manual selection from user via dropdown index (always represented with int function)
+	std::string photoSort_settings::addCamera() {
+		if (!std::filesystem::exists(cfgName)) {
+			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
+			return "";
+		}
+	}
+
 	int photoSort_settings::addCamera(int dropDown) {
 		if (!std::filesystem::exists(cfgName)) {
 			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
 			return -1;
+		}
+
+		switch (dropDown)
+		{
+		case 1:		//Sony
+			toml::table* sonyCamera;
+			try {
+				sonyCamera = toml::parse_file(cfgName)["Cameras"].as_array()->at(0).as_table();
+				sonyCamera->insert("CameraBrand", "Sony");
+				//TODO: further Sony camera info insertion
+				//String array of camera models to choose, chosen by user input
+				//Figure out how to pass user input here or prior to function call
+
+			} catch (const std::exception& e) {
+			
+			}
+			break;
+		
+		default:	//invalid index
+			std::cerr << "Invalid dropdown for adding camera!" << std::endl;
+			break;
+		}
+	}
+
+	std::string photoSort_settings::getLens() {
+		if (!std::filesystem::exists(cfgName)) {
+			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
+			return "";
 		}
 	}
 	// end photoSort_settings

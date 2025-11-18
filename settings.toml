@@ -11,6 +11,7 @@ ByFormat = false
 ByCameraModel = false
 ByOtherMeta = false     #direct to other specific metadata
 
+#TODO: method to pull metadata from detected files to insert into the table below
 [Metadata]  #multiple options can be organized once `ByOtherMeta` is true
 LensModel = 
 ExposureLevel = 
@@ -19,11 +20,11 @@ Orientation =
 Parameter = false   #GO TO [Parameter] table
 
 [Parameter]
-Metering =
-
+Metering = Matrix
+MeteringOptions = ["Spot", "Center-weighted", "Matrix", "Evaluative"]
 
 [[Cameras]]	#Camera specific metadata settings
-CameraBrand =
+CameraBrand = 
 CameraModel = 
 RAWFormat = 
 

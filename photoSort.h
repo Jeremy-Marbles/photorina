@@ -30,6 +30,31 @@
 //ie for missing file vs bad file
 //or bad directory (which shouldn't be possible)
 
+//Array structures for list of cameras by brand and model
+//FIXME: use official product names from manufacturers (or what is in metadata)
+struct CameraList {
+	std::vector<std::string> Sony = {	//https:://exiftool.org/TagNames/Sony.html
+		"Sony A7 III",
+		"Sony A7R IV",
+		"Sony A9",
+		"Sony A6400"
+	};
+
+	std::vector<std::string> Canon = {
+		"Canon EOS R5",
+		"Canon EOS R6",
+		"Canon EOS 5D Mark IV",
+		"Canon EOS 90D"
+	};
+
+	std::vector<std::string> Nikon = {
+		"Nikon Z7 II",
+		"Nikon Z6 II",
+		"Nikon D850",
+		"Nikon D7500"
+	};
+};
+
 namespace photo {
 	class photoSort_settings {
 
@@ -56,7 +81,13 @@ namespace photo {
 
 			int populateCfg(int command);
 
+			//Two overloads for adding camera info:
+			//one for adding via dropdown index (manual selection from user)
+			//one for adding via metadata read from file
+			std::string addCamera();
 			int addCamera(int dropDown);
+			std::string getLens();
+			int getLense(int dropDown);
 	};
 
 	class photoSort {
