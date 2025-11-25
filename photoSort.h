@@ -30,31 +30,6 @@
 //ie for missing file vs bad file
 //or bad directory (which shouldn't be possible)
 
-//Array structures for list of cameras by brand and model
-//FIXME: use official product names from manufacturers (or what is in metadata)
-struct CameraList {
-	std::vector<std::string> Sony = {	//https:://exiftool.org/TagNames/Sony.html
-		"Sony A7 III",
-		"Sony A7R IV",
-		"Sony A9",
-		"Sony A6400"
-	};
-
-	std::vector<std::string> Canon = {
-		"Canon EOS R5",
-		"Canon EOS R6",
-		"Canon EOS 5D Mark IV",
-		"Canon EOS 90D"
-	};
-
-	std::vector<std::string> Nikon = {
-		"Nikon Z7 II",
-		"Nikon Z6 II",
-		"Nikon D850",
-		"Nikon D7500"
-	};
-};
-
 namespace photo {
 	class photoSort_settings {
 
@@ -85,9 +60,31 @@ namespace photo {
 			//one for adding via dropdown index (manual selection from user)
 			//one for adding via metadata read from file
 			std::string addCamera();
-			int addCamera(int dropDown);
+			int addCamera(std::vector<std::string> cameraInfo);
 			std::string getLens();
-			int getLense(int dropDown);
+			int getLens(std::string uInput);
+			
+			//TODO: user input command			
+			//Figure out best way to input multiple variables
+			std::vector<std::string> input(int command) {
+				std::vector<std::string> setInput;
+				std::string newCamera;
+				switch (command) {
+					case 1:		//for addCamera
+						std::cout << "Add info for the following:\n Camera brand: ";
+						std::cin >> newCamera;
+						setInput.push_back(newCamera);
+						std::cout << "Camera model: ";
+						std::cin >> newCamera;
+						setInput.push_back(newCamera);
+						std::cout << "Raw format: ";
+						std::cin >> newCamera;
+						setInput.push_back(newCamera);
+						return setInput;
+					default:
+						break;
+				}
+			}
 	};
 
 	class photoSort {

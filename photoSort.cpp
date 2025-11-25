@@ -162,32 +162,14 @@ namespace photo {
 		}
 	}
 
-	int photoSort_settings::addCamera(int dropDown) {
+	//Given user input vector of camera info (3 strings: brand, model, raw formats)
+	int photoSort_settings::addCamera(std::vector<std::string> cameraInfo) {
 		if (!std::filesystem::exists(cfgName)) {
 			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
 			return -1;
 		}
 
-		switch (dropDown)
-		{
-		case 1:		//Sony
-			toml::table* sonyCamera;
-			try {
-				sonyCamera = toml::parse_file(cfgName)["Cameras"].as_array()->at(0).as_table();
-				sonyCamera->insert("CameraBrand", "Sony");
-				//TODO: further Sony camera info insertion
-				//String array of camera models to choose, chosen by user input
-				//Figure out how to pass user input here or prior to function call
 
-			} catch (const std::exception& e) {
-			
-			}
-			break;
-		
-		default:	//invalid index
-			std::cerr << "Invalid dropdown for adding camera!" << std::endl;
-			break;
-		}
 	}
 
 	std::string photoSort_settings::getLens() {
@@ -196,6 +178,7 @@ namespace photo {
 			return "";
 		}
 	}
+	
 	// end photoSort_settings
 
 	// begin photoSort  
