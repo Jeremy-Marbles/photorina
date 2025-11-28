@@ -25,6 +25,8 @@
 #include <fstream>
 //include https://github.com/marzer/tomlplusplus for toml parsing
 #include "Resources/toml.hpp"
+//include https://exiv2.org/getting-started.html
+
 
 //TODO: global error handling
 //ie for missing file vs bad file
@@ -55,36 +57,21 @@ namespace photo {
 			int modifySettings(int command);
 
 			int populateCfg(int command);
-
+			
+			//TODO: user input command			
+			//Figure out best way to input multiple variables
+			std::vector<std::string> input(int command);
+			
 			//Two overloads for adding camera info:
 			//one for adding via dropdown index (manual selection from user)
 			//one for adding via metadata read from file
 			std::string addCamera();
 			int addCamera(std::vector<std::string> cameraInfo);
-			std::string getLens();
-			int getLens(std::string uInput);
+			std::string setLens();
+			int setLens(std::string uInput);
 			
-			//TODO: user input command			
-			//Figure out best way to input multiple variables
-			std::vector<std::string> input(int command) {
-				std::vector<std::string> setInput;
-				std::string newCamera;
-				switch (command) {
-					case 1:		//for addCamera
-						std::cout << "Add info for the following:\n Camera brand: ";
-						std::cin >> newCamera;
-						setInput.push_back(newCamera);
-						std::cout << "Camera model: ";
-						std::cin >> newCamera;
-						setInput.push_back(newCamera);
-						std::cout << "Raw format: ";
-						std::cin >> newCamera;
-						setInput.push_back(newCamera);
-						return setInput;
-					default:
-						break;
-				}
-			}
+			int removeCamera(std::string cameraName);
+
 	};
 
 	class photoSort {

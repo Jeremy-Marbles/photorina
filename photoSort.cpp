@@ -152,6 +152,34 @@ namespace photo {
 		}
 	}
 
+	std::vector<std::string> input(int command) {
+		std::vector<std::string> setInput;
+		std::string newCamera;
+
+		switch (command) {
+			case 1:		//for addCamera
+				std::cout << "Add info for the following:\n Camera brand: ";
+				std::cin >> newCamera;
+				setInput.push_back(newCamera);
+				std::cout << "Camera model: ";
+				std::cin >> newCamera;
+				setInput.push_back(newCamera);
+				std::cout << "Raw format: ";
+				std::cin >> newCamera;
+				setInput.push_back(newCamera);
+				return setInput;
+			case 2:		//for setLens
+				std::cout << "Set a lens name (preferable to match metadata): ";
+				std::cin >> newCamera;
+				setInput.push_back(newCamera);
+				return setInput;
+			default:
+				break;
+			}
+
+		return setInput; //return empty vector on failure
+	}
+
 	//Two overloads for adding camera info for the following:
 	//pull camera info from metadata read-from-file
 	//manual selection from user via dropdown index (always represented with int function)
@@ -160,19 +188,30 @@ namespace photo {
 			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
 			return "";
 		}
+
+		
 	}
 
-	//Given user input vector of camera info (3 strings: brand, model, raw formats)
+	//Given user input vector of camera info (3 strings: brand, model, raw formats), set new camera table array into settings.toml
 	int photoSort_settings::addCamera(std::vector<std::string> cameraInfo) {
 		if (!std::filesystem::exists(cfgName)) {
 			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
 			return -1;
 		}
+		
+		toml::table newCamera;
+		newCamera.insert("CameraBrand", cameraInfo[0]);
+		newCamera.insert("CameraModel", cameraInfo[1]);
+		toml::array rawFormats;
+		rawFormats.push_back(cameraInfo[2]);
+		newCamera.insert("RAWFormat", rawFormats);
+		// TODO: Insert newCamera into settings.toml
+		
 
-
+		return 0;
 	}
 
-	std::string photoSort_settings::getLens() {
+	std::string photoSort_settings::setLens() {
 		if (!std::filesystem::exists(cfgName)) {
 			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
 			return "";
