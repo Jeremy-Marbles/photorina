@@ -133,6 +133,12 @@ namespace photo {
 			std::cerr << "Config file does not exist in folder! Aborting..." << std::endl;
 			return -1;
 		}
+
+		cfgFile.open(cfgName);
+		toml::table config = toml::parse_file("cfgName");
+
+		cfgFile.close();
+		return 0;
 	}
 
 	int photoSort_settings::modifySettings(int command) {
