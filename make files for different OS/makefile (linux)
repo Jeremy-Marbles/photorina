@@ -1,0 +1,88 @@
+# PhotoReset Makefile
+# Quick build targets: make, make run, make rebuild, make debug
+
+# Compiler and flags
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -Idependencies
+DEBUGFLAGS = -g -O0 -DDEBUG
+RELEASEFLAGS = -O3 -DNDEBUG
+
+# Directories
+SRCDIR = .
+OBJDIR = build
+DEPDIR = dependencies
+TARGET = photoReset
+DEBUG_TARGET = photoReset_debug
+
+# Source files
+SOURCES = main.cpp photoReset.cpp
+HEADERS = photoReset.h
+OBJECTS = $(addprefix $(OBJDIR)/,$(SOURCES:.cpp=.o))
+DEBUG_OBJECTS = $(addprefix $(OBJDIR)/debug/,$(SOURCES:.cpp=.o))
+
+# Dependencies
+DEPS = $(DEPDIR)/toml.hpp $(DEPDIR)/date.h
+
+# Default target - optimized release build
+all: CXXFLAGS += $(RELEASEFLAGS)
+all: $(TARGET)
+	@echo "✓ Build complete: $(TARGET)"
+
+# Quick rebuild - clean and build
+rebuild: clean all
+
+# Build and run in one command
+run: $(TARGET)
+	@echo "Running $(TARGET)..."
+	@./$(TARGET)
+
+# Debug build with symbols
+debug: CXXFLAGS += $(DEBUGFLAGS)
+debug: $(DEBUG_TARGET)
+	@echo "✓ Debug build complete: $(DEBUG_TARGET)"
+
+# Link release executable
+$(TARGET): $(OBJECTS)
+	@echo "Linking $@..."
+	@$(CXX) $(CXXFLAGS) -o $@ $^
+
+# Link debug executable
+$(DEBUG_TARGET): $(DEBUG_OBJECTS)
+	@echo "Linking $@..."
+	@$(CXX) $(CXXFLAGS) -o $@ $^
+
+# Compile source files (release)
+$(OBJDIR)/%.o: %.cpp $(HEADERS) $(DEPS)
+	@mkdir -p $(OBJDIR)
+	@echo "Compiling $<..."
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Compile source files (debug)
+$(OBJDIR)/debug/%.o: %.cpp $(HEADERS) $(DEPS)
+	@mkdir -p $(OBJDIR)/debug
+	@echo "Compiling $< (debug)..."
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Clean build artifacts
+clean:
+	@echo "Cleaning build artifacts..."
+	@rm -rf $(OBJDIR) $(TARGET) $(DEBUG_TARGET)
+	@echo "✓ Clean complete"
+
+# Help target
+help:
+	@echo "PhotoReset Build Targets:"
+	@echo "  make          - Build optimized release version"
+	@echo "  make debug    - Build with debug symbols (-g -O0)"
+	@echo "  make run      - Build and execute immediately"
+	@echo "  make rebuild  - Clean and rebuild from scratch"
+	@echo "  make clean    - Remove all build artifacts"
+	@echo "  make help     - Show this help message"
+	@echo ""
+	@echo "Quick workflows:"
+	@echo "  make && ./photoReset     - Build and run"
+	@echo "  make run                 - Same as above"
+	@echo "  make -j4                 - Parallel build (4 cores)"
+
+# Phony targets
+.PHONY: all clean rebuild run debug help

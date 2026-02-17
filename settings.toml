@@ -1,30 +1,29 @@
-[System]
-OS = 
-
 [Directories]
-DefaultCWD =
-DefaultDestination = 
+CWD = 'E:\Documents (E)\neovim\photoReset'
+Destination = 'BLANK'
 
-[Sorting]
-ByDate = true
-ByFormat = false
-ByCameraModel = false
-ByOtherMeta = false     #direct to other specific metadata
-
-#TODO: method to pull metadata from detected files to insert into the table below
-[Metadata]  #multiple options can be organized once `ByOtherMeta` is true
-LensModel = 
-ExposureLevel = 
-Location = 
-Orientation = 
-Parameter = false   #GO TO [Parameter] table
+[Metadata]
+Date = '2026-02-13'
+Exposure = 'BLANK'
+LensModel = 'BLANK'
+Location = 'BLANK'
+Orientation = 'BLANK'
+Parameters = false
 
 [Parameter]
-Metering = Matrix
-MeteringOptions = ["Spot", "Center-weighted", "Matrix", "Evaluative"]
+Metering = 'Matrix'
+MeteringOptions = [ 'Spot', 'Center-weighted', 'Matrix', 'Evaluative' ]
 
-[[Cameras]]	#Camera specific metadata settings
-CameraBrand = 
-CameraModel = 
-RAWFormat = 
+[Sorting]
+ByCameraModel = false
+ByDate = true
+ByFormat = false
+ByOtherMeta = false
 
+[System]
+OS = 'Windows'
+
+[[Camera]]
+CameraBrand = 'Sony'
+CameraModel = 'A7CIII'
+RAWFormat = [ '.ARW' ]
