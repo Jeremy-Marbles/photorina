@@ -34,7 +34,7 @@ namespace photo {
             cameras.push_back(toml::table{
                 {"CameraBrand", camInfo[0]},
                 {"CameraModel", camInfo[1]},
-                {"RAWFormat", toml::array{camInfo[2]} }     //TODO: get multiple formats into this array
+                {"Formats", toml::array{camInfo[2]} }     //TODO: get multiple formats into this array
             });
 
             defaultConfig.insert("Directories", toml::table {
@@ -95,8 +95,8 @@ namespace photo {
                     if (oldCameraTable->contains("CameraModel")) {
                         newCamera.insert("CameraModel", (*oldCameraTable)["CameraModel"]);
                     }
-                    if (oldCameraTable->contains("RAWFormat")) {
-                        newCamera.insert("RAWFormat", (*oldCameraTable)["RAWFormat"]);
+                    if (oldCameraTable->contains("Formats")) {
+                        newCamera.insert("Formats", (*oldCameraTable)["Formats"]);
                     }
                     
                     cameras.push_back(newCamera);
@@ -129,7 +129,7 @@ namespace photo {
                     cameras.push_back(toml::table{
                         {"CameraBrand", camInfo[0]},
                         {"CameraModel", camInfo[1]},
-                        {"RAWFormat", toml::array{camInfo[2]} }     //TODO: get multiple formats into this array
+                        {"Formats", toml::array{camInfo[2]} }     //TODO: get multiple formats into this array
                     });
                     setParameters.insert_or_assign("Camera", cameras);
                 }
@@ -155,7 +155,7 @@ namespace photo {
 
     std::vector<std:: string> photoSettings::addCamera() {
         std::vector<std::string> cameraInfo;
-        std::string brand, model, rawFormatsInput;
+        std::string brand, model, formatsInput;
 
         std::cout << "Enter Camera Brand: ";
         std::getline(std::cin, brand);
@@ -165,17 +165,17 @@ namespace photo {
         std::getline(std::cin, model);
         cameraInfo.push_back(model);
 
-        std::cout << "Enter RAW Formats (comma-separated, e.g., .CR2,.NEF): ";
-        std::getline(std::cin, rawFormatsInput);
+        std::cout << "Enter Formats (comma-separated, e.g., .CR2,.NEF,.JPEG,.HIF): ";
+        std::getline(std::cin, formatsInput);
 
         size_t start = 0;
-        size_t end = rawFormatsInput.find(',');
+        size_t end = formatsInput.find(',');
         while (end != std::string::npos) {
-            cameraInfo.push_back(rawFormatsInput.substr(start, end - start));
+            cameraInfo.push_back(formatsInput.substr(start, end - start));
             start = end + 1;
-            end = rawFormatsInput.find(',', start);
+            end = formatsInput.find(',', start);
         }
-        cameraInfo.push_back(rawFormatsInput.substr(start));
+        cameraInfo.push_back(formatsInput.substr(start));
 
         return cameraInfo;
     }
@@ -188,16 +188,16 @@ namespace photo {
                 
                 toml::table newCamera;
                 newCamera.insert("CameraBrand", cameraInfo.size() > 0 ? cameraInfo[0] : "");
-                newCamera.insert("CameraModel", cameraInfo.size() > 1 ? cameraInfo[0] : "");
+                newCamera.insert("CameraModel", cameraInfo.size() > 1 ? cameraInfo[1] : "");
 
-                toml::array rawFormats;
+                toml::array formats;
                 if (cameraInfo.size() > 2) {
                     for (size_t i = 2; i < cameraInfo.size(); ++i) {
-                        rawFormats.push_back(cameraInfo[i]);
+                        formats.push_back(cameraInfo[i]);
                     }
                 }
 
-                newCamera.insert("RAWFormat", rawFormats);
+                newCamera.insert("Formats", formats);
 
                 cameraArray.push_back(newCamera);
                 std::ofstream configOut(cfgName);
@@ -210,6 +210,7 @@ namespace photo {
             std::cerr << "Failed to add camera info:\n" << e.what() << std::endl;
             return toml::array{};
         }
+        throw std::runtime_error("end of addCamera function:");
     }
 
     toml::table photoSettings::setMetadata(std::string key, std::string value) {
@@ -229,13 +230,17 @@ namespace photo {
                         metaTable->insert_or_assign("Parameters", which);
                     }
                 }
-                return *metaTable;
+
+                //debug
+                //std::cout << "Running metaData():\n" << settingsTable << std::endl;
+                //return settingsTable;
             }
         } catch (const std::exception& e) {
             std::cerr << "Failed to get metadata table:\n" << e.what() << std::endl;
 
             return toml::table{};
         }
+        throw std::runtime_error("end of setMetadata function:");
     }
 }
 

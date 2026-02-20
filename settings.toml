@@ -26,4 +26,4 @@ OS = 'Windows'
 [[Camera]]
 CameraBrand = 'Sony'
 CameraModel = 'A7CIII'
-RAWFormat = [ '.ARW' ]
+Formats = [ '.ARW' ]
