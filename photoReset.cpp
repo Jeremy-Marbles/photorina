@@ -234,6 +234,13 @@ namespace photo {
                 //debug
                 //std::cout << "Running metaData():\n" << settingsTable << std::endl;
                 //return settingsTable;
+
+                settingsTable.insert_or_assign("Metadata", *metaTable);
+                std::ofstream configOut(cfgName);
+                configOut << settingsTable;
+                configOut.close();
+
+                return settingsTable;
             }
         } catch (const std::exception& e) {
             std::cerr << "Failed to get metadata table:\n" << e.what() << std::endl;

@@ -25,9 +25,15 @@ int main() {
     key = cameraTest.substr(0, cameraTest.find('=') - 1);
     value = cameraTest.substr(cameraTest.find('=') + 2, cameraTest.find('\n') - cameraTest.find('=') - 3);
 
-    toml::table metaDataTable = newSort.setMetadata(key, value);
+    std::vector <std::string> cameraInfo = newSort.addCamera();
+    
+    std::cout << cameraInfo[0] << ", " << cameraInfo[1] << ", " << cameraInfo[2] << ", " << cameraInfo[3] << std::endl;
 
-    std::cout << "Metadata Table after setMetadata():\n" << metaDataTable << std::endl;
+    toml::array camera = newSort.addCamera(cameraInfo);
+
+    std::cout << "Array after addCamera:\n" << camera << std::endl;
+
+    //std::cout << "Metadata Table after setMetadata():\n" << metaDataTable << std::endl;
 
     return 0;
 }
