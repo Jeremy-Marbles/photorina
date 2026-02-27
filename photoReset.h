@@ -24,12 +24,17 @@ namespace photo {
             photoSettings();
             std::vector<std::string> addCamera();
             toml::array addCamera(std::vector<std::string> cameraInfo);
+            int deleteCamera(std::string cameraModel);
 
             toml::table setMetadata(std::string key, std::string value);
+            toml::table setParameter(std::string key, std::string value);
+            toml::table setSort(std::string key, bool value);
     };
     
 }
 
+//NOTES:
+//- Pattern metering is called "Evaluative" in Fujifilm and Canon cameras, "Matrix" in Nikon, "Pattern" in Sony.
 namespace photo {
 
     class photoSort {
@@ -41,6 +46,8 @@ namespace photo {
         public:
             photoSort();
             void populateCWD();
+
+            std::filesystem::path getCWD_();
     };
 
 }

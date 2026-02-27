@@ -54,6 +54,7 @@ namespace photo {
             std::string date_str = date::format("%Y-%m-%d", date::floor<date::days>(std::chrono::system_clock::now())); 
 
             defaultConfig.insert("Metadata", toml::table {
+                {"Author", "BLANK"},
                 {"Date", date_str},
                 {"LensModel", "BLANK"},
                 {"Exposure", "BLANK"},
@@ -77,7 +78,6 @@ namespace photo {
             
             //lead to manual setup of parameters
         } else {
-            //FIXME: toml::parse fails to read existing file
             auto setParameters = toml::parse_file(cfgName);            
             try {
                 std::vector<std::string> camInfo;
@@ -150,7 +150,6 @@ namespace photo {
                 std::cerr << "Error reading 'settings.toml':\n" << e.what() << std::endl;
             }
         }
-
     }
 
     std::vector<std:: string> photoSettings::addCamera() {
@@ -213,6 +212,38 @@ namespace photo {
         throw std::runtime_error("end of addCamera function:");
     }
 
+    int photoSettings::deleteCamera(std::string cameraModel) {
+        try {
+            toml::table settingsTable = toml::parse_file(cfgName);
+            
+            if (settingsTable.contains("Camera")) {
+                toml::array& cameraArray = *settingsTable["Camera"].as_array();
+                
+                for (size_t i = 0; i < cameraArray.size(); i++) {
+                    auto modelTable = cameraArray[i].as_table();
+                    auto getModel = modelTable->at("CameraModel").value<std::string>();
+
+                    if (*getModel == cameraModel) {
+                        cameraArray.erase(cameraArray.begin() + i);
+                        std::ofstream configOut(cfgName);
+                        configOut << settingsTable;
+                        configOut.close();
+                        break;
+                    }
+                }
+                return 1;
+            }
+
+        } catch (const std::exception& e){
+            std::cerr << "Failed to delete camera info:\n" << e.what() << std::endl;
+            return -1;
+        }
+
+        throw std::runtime_error("end of deleteCamera function:");
+    }
+
+    //Returns updated Metadata table after setting key-value pair.
+    //On failure, returns empty table and prints error message to console.
     toml::table photoSettings::setMetadata(std::string key, std::string value) {
         try {
             toml::table settingsTable = toml::parse_file(cfgName);
@@ -230,24 +261,72 @@ namespace photo {
                         metaTable->insert_or_assign("Parameters", which);
                     }
                 }
-
-                //debug
-                //std::cout << "Running metaData():\n" << settingsTable << std::endl;
-                //return settingsTable;
+                else {
+                    metaTable->insert_or_assign(key, value);
+                }
 
                 settingsTable.insert_or_assign("Metadata", *metaTable);
                 std::ofstream configOut(cfgName);
                 configOut << settingsTable;
                 configOut.close();
 
-                return settingsTable;
+                return settingsTable["Metadata"].as_table() ? *settingsTable["Metadata"].as_table() : toml::table{};
             }
         } catch (const std::exception& e) {
             std::cerr << "Failed to get metadata table:\n" << e.what() << std::endl;
 
             return toml::table{};
         }
+
         throw std::runtime_error("end of setMetadata function:");
+    }
+
+    //Returns updated Parameter table after setting key-value pair.
+    //On failure, returns empty table and prints error message to console.
+    toml::table photoSettings::setParameter(std::string key, std::string value) {
+        try {
+            toml::table settingsTable = toml::parse_file(cfgName);
+
+            if (settingsTable.contains("Parameter")) {
+                auto paramTable = *settingsTable["Parameter"].as_table();
+                paramTable.insert_or_assign(key, value);
+
+                //TODO: brainstorm how to utilize the array in the toml for metering options
+                std::ofstream configOut(cfgName);
+                configOut << settingsTable;
+                configOut.close();
+                return paramTable;
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Failed to get parameter table:\n" << e.what() << std::endl;
+
+            return toml::table{};
+        }
+
+        throw std::runtime_error("end of setParameter function:");
+    }
+
+    //Returns updated Sorting table after setting key-value pair.
+    //On failure, returns empty table and prints error message to console.
+    toml::table photoSettings::setSort(std::string key, bool value) {
+        try {
+            toml::table settingsTable = toml::parse_file(cfgName);
+
+            if (settingsTable.contains("Sorting")) {
+                auto sortTable = *settingsTable["Sorting"].as_table();
+                sortTable.insert_or_assign(key, value);
+
+                std::ofstream configOut(cfgName);
+                configOut << settingsTable;
+                configOut.close();
+                return sortTable;
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Failed to get sorting table:\n" << e.what() << std::endl;
+            return toml::table{};
+        }
+
+        throw std::runtime_error("end of setSort function:");
     }
 }
 

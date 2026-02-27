@@ -13,11 +13,11 @@ int main() {
 
     //TODO: test setMetadata function
     
-    static constexpr std::string_view cameraTest = R"(
+    static constexpr std::string_view cameraTest = R"(      
         CameraBrand = 'Fujifilm'
         CameraModel = 'X-T30 III'
         Formats = [ '.RAF', '.JPEG' ]
-    )"sv;
+    )"sv; //keep for insert_or_assign tests
     
     toml::table newTable = toml::parse(cameraTest);
     std::string key, value;
@@ -25,15 +25,21 @@ int main() {
     key = cameraTest.substr(0, cameraTest.find('=') - 1);
     value = cameraTest.substr(cameraTest.find('=') + 2, cameraTest.find('\n') - cameraTest.find('=') - 3);
 
-    std::vector <std::string> cameraInfo = newSort.addCamera();
+    //std::vector <std::string> cameraInfo = newSort.addCamera();
     
-    std::cout << cameraInfo[0] << ", " << cameraInfo[1] << ", " << cameraInfo[2] << ", " << cameraInfo[3] << std::endl;
+    //std::cout << cameraInfo[0] << ", " << cameraInfo[1] << ", " << cameraInfo[2] << ", " << cameraInfo[3] << std::endl;
 
-    toml::array camera = newSort.addCamera(cameraInfo);
+    //toml::array camera = newSort.addCamera(cameraInfo);
 
-    std::cout << "Array after addCamera:\n" << camera << std::endl;
+    //std::cout << "Array after addCamera:\n" << camera << std::endl;
 
-    //std::cout << "Metadata Table after setMetadata():\n" << metaDataTable << std::endl;
+    std::string metaKey = "Author";
+    std::string metaValue = "BLANK";
+
+    toml::table photoMeta = newSort.setMetadata(metaKey, metaValue);
+
+    std::cout << "Metadata Table after setMetadata():\n" << photoMeta << std::endl;
+    
 
     return 0;
 }
