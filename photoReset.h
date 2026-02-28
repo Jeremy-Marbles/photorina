@@ -17,7 +17,7 @@
 namespace photo {
 
     class photoSettings {
-        private:
+        protected:
             std::string cfgName = "settings.toml";
 
         public:
@@ -37,7 +37,7 @@ namespace photo {
 //- Pattern metering is called "Evaluative" in Fujifilm and Canon cameras, "Matrix" in Nikon, "Pattern" in Sony.
 namespace photo {
 
-    class photoSort {
+    class photoSort : public photoSettings {
         private:
             std::filesystem::path root_;
             std::filesystem::path CWD_;

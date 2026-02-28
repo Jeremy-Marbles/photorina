@@ -331,11 +331,22 @@ namespace photo {
 }
 
 namespace photo {
+    /* PhotoSort
+     * 1) Verifies existence of settings.toml
+     * 2) Read [System] table for what system is loaded
+     * 3) Set default CWD to photo folder of operating system 
+     * 4) Populate vector with directory entries of CWD for sorting functions to utilize
+     * */
     photoSort::photoSort() {
+        toml::table settingsTable = toml::parse_file(cfgName);
         root_ = std::filesystem::path();
 
         try {
-            CWD_ = std::filesystem::current_path();
+            if (settingsTable.contains("Directories") && 
+                settingsTable["Directories"].as_table()->contains("CWD")) {
+                
+                auto CWDValue = settingsTable["Directories"]["CWD"].value<std::string>();
+            }
         } catch (std::filesystem::filesystem_error& badCWD){
             std::cerr << "PS Construct error:\n" << badCWD.what() << '\n';
             std::cerr << "Path: " << badCWD.path1() << '\n';
