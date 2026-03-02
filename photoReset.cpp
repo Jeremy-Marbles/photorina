@@ -338,6 +338,11 @@ namespace photo {
      * 4) Populate vector with directory entries of CWD for sorting functions to utilize
      * */
     photoSort::photoSort() {
+        //temporarily set CWD_ as photorina folder and get the settings file
+        CWD_ = std::filesystem::current_path();
+        if (!std::filesystem::exists(CWD_ / "settings.toml")) {
+            throw std::runtime_error("Settings file does not exist.");
+        }
         toml::table settingsTable = toml::parse_file(cfgName);
         root_ = std::filesystem::path();
 
