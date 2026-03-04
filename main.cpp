@@ -3,6 +3,9 @@
 
 using namespace std::string_view_literals;
 
+//CLI TODOs: 
+//Basic: -
+
 int main() {
 
     photo::photoSettings newSort;
@@ -36,10 +39,15 @@ int main() {
     std::string metaKey = "Author";
     std::string metaValue = "BLANK";
 
-    toml::table photoMeta = newSort.setMetadata(metaKey, metaValue);
+    //toml::table photoMeta = newSort.setMetadata(metaKey, metaValue);
 
-    std::cout << "Metadata Table after setMetadata():\n" << photoMeta << std::endl;
-    
+    //std::cout << "Metadata Table after setMetadata():\n" << photoMeta << std::endl;
+ 
+    //init photoSort
+    //std::cout << std::endl;
+
+    photo::photoSort newSort2;
+
 
     return 0;
 }

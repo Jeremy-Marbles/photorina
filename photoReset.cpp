@@ -343,14 +343,49 @@ namespace photo {
         if (!std::filesystem::exists(CWD_ / "settings.toml")) {
             throw std::runtime_error("Settings file does not exist.");
         }
-        toml::table settingsTable = toml::parse_file(cfgName);
-        root_ = std::filesystem::path();
 
+        toml::table settingsTable = toml::parse_file(cfgName);
         try {
+            std::string OS_string = *settingsTable["System"]["OS"].value<std::string>();
+            if (OS_string == "Windows") {
+                root_ = std::filesystem::path("C:");
+            } else if (OS_string == "MacOS" || OS_string == "Linux") {  //test on framework
+                root_ = std::filesystem::path("/");
+            } else {        //unknown system. require user to specify root directory
+                std::cout << "Unknown operating system. Please specify root directory: ";
+                std::string rootInput;
+                std::getline(std::cin, rootInput);
+                root_ = std::filesystem::path(rootInput);
+            }
+            
+            //debug
+            std::cout << root_.string() << std::endl;
+            
             if (settingsTable.contains("Directories") && 
                 settingsTable["Directories"].as_table()->contains("CWD")) {
                 
                 auto CWDValue = settingsTable["Directories"]["CWD"].value<std::string>();
+                CWD_ = std::filesystem::current_path();
+                
+                //TODO: set CWD to default photo folder of operating system
+                //compare CWDValue to CWD_ current_path(), if true change to default photo folder, i.e "Pictures"
+                //fall back if folder can't be located, throw a warning that user needs to specify which folder to use
+                if (CWD_.string() == CWDValue) {
+                    if (OS_string == "Windows") {
+                        CWD_ = root_ / "\'Pictures";
+                        
+                        settingsTable["Directories"].as_table()->insert_or_assign("CWD", CWD_.string());
+                        std::ofstream configOut(cfgName);
+                        configOut << settingsTable;
+                        configOut.close();
+                    } else if (OS_string == "MacOS") {
+
+                    } else if (OS_string == "Linux") {
+
+                    } else {
+                        //throw warning here, do not modify toml table
+                    }
+                }
             }
         } catch (std::filesystem::filesystem_error& badCWD){
             std::cerr << "PS Construct error:\n" << badCWD.what() << '\n';

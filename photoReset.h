@@ -47,7 +47,12 @@ namespace photo {
             photoSort();
             void populateCWD();
 
+            std::filesystem::path getRoot_();
             std::filesystem::path getCWD_();
+
+            //CLI based sorting functions:
+            //-b = basic sort
+            void moveToDestination(std::string working, std::string destination);
     };
 
 }
