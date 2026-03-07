@@ -47,12 +47,17 @@ namespace photo {
             photoSort();
             void populateCWD();
 
-            std::filesystem::path getRoot_();
-            std::filesystem::path getCWD_();
-
+            //the only mutators that should touch the toml
+            //takes input argv
+            std::filesystem::path setCWD(std::string direct);
+            std::filesystem::path setDestination(std::string direct);
+            
             //CLI based sorting functions:
-            //-b = basic sort
+            //-b = basic sort, i.e copy and paste to a new folder specified.
             void moveToDestination(std::string working, std::string destination);
-    };
+            //semi mutated version of moveToDestination
+            //-a = pulls from directories on record in the toml file
+            void autoMove();
+        };
 
 }

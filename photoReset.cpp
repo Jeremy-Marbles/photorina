@@ -339,7 +339,7 @@ namespace photo {
      * */
     photoSort::photoSort() {
         //temporarily set CWD_ as photorina folder and get the settings file
-        CWD_ = std::filesystem::current_path();
+        CWD_ = std::filesystem::current_path(); //change to search Appdata for windows or .config in linux
         if (!std::filesystem::exists(CWD_ / "settings.toml")) {
             throw std::runtime_error("Settings file does not exist.");
         }
@@ -372,18 +372,34 @@ namespace photo {
                 //fall back if folder can't be located, throw a warning that user needs to specify which folder to use
                 if (CWD_.string() == CWDValue) {
                     if (OS_string == "Windows") {
-                        CWD_ = root_ / "\'Pictures";
+                        const char* username = std::getenv("USERNAME");
+                        if(username != nullptr) {
+                            CWD_ = root_ / "Users" / username / "Pictures";
+                        } else {
+                            std::cerr << "Cannot retrieve USERNAME enviroment variable" << std::endl;
+                            CWD_ = std::filesystem::current_path();
+                        }
                         
                         settingsTable["Directories"].as_table()->insert_or_assign("CWD", CWD_.string());
                         std::ofstream configOut(cfgName);
                         configOut << settingsTable;
                         configOut.close();
-                    } else if (OS_string == "MacOS") {
-
-                    } else if (OS_string == "Linux") {
-
+                    } else if (OS_string == "MacOS" || OS_string == "Linux") {
+                        const char* username = std::getenv("USER");
+                        if (username != nullptr) {
+                            CWD_ = root_ / "Users" / username / "Pictures";
+                        } else {
+                            std::cerr << "Could not retrieve USER environment variable" << std::endl;
+                            CWD_ = std::filesystem::current_path();
+                        }
+ 
+                        settingsTable["Directories"].as_table()->insert_or_assign("CWD", CWD_.string());
+                        std::ofstream configOut(cfgName);
+                        configOut << settingsTable;
+                        configOut.close();
                     } else {
                         //throw warning here, do not modify toml table
+                        std::cerr << "Warning: OS not specified. Manually specify path to pictures folder." << std::endl;
                     }
                 }
             }
@@ -395,18 +411,28 @@ namespace photo {
     }
 
     void photoSort::populateCWD() {
-        if (!directory_CWD.empty()) {
-            directory_CWD.clear();
+        
+    }
+
+    std::filesystem::path photoSort::setCWD(std::string direct) {
+        std::filesystem::path projectPath = std::filesystem::current_path() / "settings.toml"; 
+        std::error_code ec;
+        if (!std::filesystem::exists(projectPath, ec)) {
+            throw std::filesystem::filesystem_error("Cannot find settings.toml", projectPath, ec);
         }
 
-        try {
-            for (const auto& entry : std::filesystem::directory_iterator(CWD_)) {
-                if (entry.is_regular_file()) {
-                    directory_CWD.push_back(entry);
-                }
-            }
-        } catch (const std::filesystem::filesystem_error& populateErr) {
-            std::cerr << "Error populating current directory:\n" << populateErr.what();
-        }   
+        return projectPath; //placeholder
+    }
+
+    std::filesystem::path photoSort::setDestination(std::string direct) {
+
+    }
+
+    void photoSort::moveToDestination(std::string working, std::string destination) {
+
+    }
+
+    void photoSort::autoMove() {
+
     }
 }

@@ -3,8 +3,8 @@
 
 using namespace std::string_view_literals;
 
-//CLI TODOs: 
-//Basic: -
+//Notes:
+//In the future, move toml to Appdata or ~/.config for better user experience and to avoid issues with permissions in CWD.
 
 int main() {
 
@@ -48,7 +48,7 @@ int main() {
 
     photo::photoSort newSort2;
 
-
+    std::filesystem::path testUnit = newSort2.setCWD("C:\'Users\'marbl\'Pictures");
     return 0;
 }
 
