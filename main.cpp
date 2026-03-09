@@ -49,6 +49,8 @@ int main() {
     photo::photoSort newSort2;
 
     std::filesystem::path testUnit = newSort2.setCWD("C:\'Users\'marbl\'Pictures");
+    
+    std::cout << testUnit.string() << std::endl;
     return 0;
 }
 

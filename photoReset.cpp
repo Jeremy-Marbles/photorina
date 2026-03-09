@@ -359,7 +359,7 @@ namespace photo {
             }
             
             //debug
-            std::cout << root_.string() << std::endl;
+            //std::cout << root_.string() << std::endl;
             
             if (settingsTable.contains("Directories") && 
                 settingsTable["Directories"].as_table()->contains("CWD")) {
@@ -414,14 +414,29 @@ namespace photo {
         
     }
 
-    std::filesystem::path photoSort::setCWD(std::string direct) {
+    std::filesystem::path photoSort::setCWD(std::string direct) {   //takes in name of a folder path
         std::filesystem::path projectPath = std::filesystem::current_path() / "settings.toml"; 
         std::error_code ec;
         if (!std::filesystem::exists(projectPath, ec)) {
             throw std::filesystem::filesystem_error("Cannot find settings.toml", projectPath, ec);
         }
+        
+        try {
+            std::filesystem::path newPath = std::filesystem::path(direct);
+            toml::table settingsTable = toml::parse_file(cfgName);
 
-        return projectPath; //placeholder
+            settingsTable["Directories"].as_table()->insert_or_assign("CWD", newPath.string());
+            std::ofstream configOut(cfgName);
+            configOut << settingsTable;
+            configOut.close();
+
+            return newPath;
+
+        } catch (std::filesystem::filesystem_error badCWD) {
+
+        }
+
+        throw std::runtime_error("end of setCWD function:");
     }
 
     std::filesystem::path photoSort::setDestination(std::string direct) {
