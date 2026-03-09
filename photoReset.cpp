@@ -433,7 +433,7 @@ namespace photo {
             return newPath;
 
         } catch (std::filesystem::filesystem_error badCWD) {
-
+            std::cerr << "Cannot locate specified directory: " << direct << std::endl;
         }
 
         throw std::runtime_error("end of setCWD function:");
