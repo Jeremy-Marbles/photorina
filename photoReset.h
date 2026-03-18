@@ -9,6 +9,7 @@
 #include <vector>
 #include <chrono>
 
+#include <mutex>
 //https://makefiletutorial.com/
 
 #include "dependencies/toml.hpp"
@@ -42,6 +43,8 @@ namespace photo {
             std::filesystem::path root_;
             std::filesystem::path CWD_;
             std::vector<std::filesystem::directory_entry> directory_CWD;
+
+            std::mutex file_move_mutex;
 
         public:
             photoSort();

@@ -459,13 +459,35 @@ namespace photo {
             return newPath;
         } catch (std::filesystem::filesystem_error badDestination) {
             std::cerr << "Cannot locate specified directory:" << std::endl;
+            std::cerr << badDestination.what() << std::endl;
         }
 
         throw std::runtime_error("end of setCWD function:");
     }
 
     void photoSort::moveToDestination(std::string working, std::string destination) {
+        std::filesystem::path workDir = std::filesystem::path(working);
+        std::filesystem::path destDir = std::filesystem::path(destination);
 
+       if (!std::filesystem::exists(workDir)) {
+            throw std::filesystem::filesystem_error("Working directory does not exist", workDir, std::make_error_code(std::errc::no_such_file_or_directory));
+        } else if (!std::filesystem::exists(destDir)) {
+            std::cerr << "Warning: destination directory \'" << destDir.string() << "\' does not exist" << std::endl;
+            std::cout << "Creating \'" << destDir.string() << "\'..." << std::endl;
+            std::filesystem::create_directories(destination); //TODO: add error handling for existing folder with same name, invalid characters in folder name, etc.
+
+            //error check one more time if directory exists after creation. if not, throw error
+            if (!std::filesystem::exists(destDir)) {
+                throw std::filesystem::filesystem_error("Destination directory does not exist", destDir, std::make_error_code(std::errc::no_such_file_or_directory));
+            } else {
+                std::cout << "Successfully created \'" << destDir.string() << "\'" << std::endl;
+            }
+        }
+        
+        try {
+
+        } catch (){
+        }
     }
 
     void photoSort::autoMove() {
