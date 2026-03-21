@@ -6,6 +6,23 @@ using namespace std::string_view_literals;
 //Notes:
 //In the future, move toml to Appdata or ~/.config for better user experience and to avoid issues with permissions in CWD.
 
+int moveWithMutexPrototype() {
+    std::filesystem::path safeTest = std::filesystem::path("C:\\Users\\marbl\\Desktop\\photorina test");
+    if (std::filesystem::exists("C:\\Users\\marbl\\Desktop\\photorina test\\test1") 
+            && std::filesystem::exists("C:\\Users\\marbl\\Desktop\\photorina test\\test2")) {
+
+    } else {
+        std::cerr << "Cannot find folders" << std::endl;
+        std::filesystem::create_directory("C:\\Users\\marbl\\Desktop\\photorina test\\test1");
+        std::filesystem::create_directory("C:\\Users\\marbl\\Desktop\\photorina test\\test2");
+        
+        std::cout << "Rerun mutex prototype" << std::endl;
+        return -1;
+    }
+
+    throw std::runtime_error("end of mutex prototype");
+}
+
 int main() {
 
     photo::photoSettings newSort;
@@ -48,9 +65,9 @@ int main() {
 
     photo::photoSort newSort2;
 
-    std::filesystem::path testUnit = newSort2.setCWD("C:\\Users\\marbl\\Pictures");
+    //std::filesystem::path testUnit = newSort2.setCWD("C:\\Users\\marbl\\Pictures");
     
-    std::cout << testUnit.string() << std::endl;
+    //std::cout << testUnit.string() << std::endl;
     return 0;
 }
 

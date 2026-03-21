@@ -462,7 +462,7 @@ namespace photo {
             std::cerr << badDestination.what() << std::endl;
         }
 
-        throw std::runtime_error("end of setCWD function:");
+        throw std::runtime_error("end of setDestination function:");
     }
 
     void photoSort::moveToDestination(std::string working, std::string destination) {
@@ -486,7 +486,8 @@ namespace photo {
         
         try {
 
-        } catch (){
+        } catch (std::filesystem::filesystem_error& moveError) {
+            std::cerr << "Error moving files:\n" << moveError.what() << std::endl;
         }
     }
 
