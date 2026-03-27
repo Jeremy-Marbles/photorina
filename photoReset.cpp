@@ -403,7 +403,7 @@ namespace photo {
                     }
                 }
             }
-        } catch (std::filesystem::filesystem_error& badCWD){
+        } catch (const std::filesystem::filesystem_error& badCWD){
             std::cerr << "PS Construct error:\n" << badCWD.what() << '\n';
             std::cerr << "Path: " << badCWD.path1() << '\n';
             std::cerr << "Err: " << badCWD.code() << std::endl;
@@ -433,8 +433,9 @@ namespace photo {
 
             return newPath;
 
-        } catch (std::filesystem::filesystem_error badCWD) {
+        } catch (const std::filesystem::filesystem_error& badCWD) {
             std::cerr << "Cannot locate specified directory: " << direct << std::endl;
+            std::cerr << badCWD.what() << std::endl;
         }
 
         throw std::runtime_error("end of setCWD function:");
@@ -457,7 +458,7 @@ namespace photo {
             configOut.close();
 
             return newPath;
-        } catch (std::filesystem::filesystem_error badDestination) {
+        } catch (const std::filesystem::filesystem_error& badDestination) {
             std::cerr << "Cannot locate specified directory:" << std::endl;
             std::cerr << badDestination.what() << std::endl;
         }
@@ -485,6 +486,23 @@ namespace photo {
         }
         
         try {
+            std::vector<std::filesystem::path> dirList;
+
+            //validate existence of files before run, to ensure contained directories aren't considered normal files
+            file_move_mutex.lock();
+            for (const auto& entry : std::filesystem::directory_iterator()) {
+                if (!std::filesystem::is_regular_file(entry.path())) {
+                    std::cerr << "Warning: " << entry.path().string() << " is not a file." << std::endl;
+                }
+                else {
+                    dirList.push_back(entry.path());
+                }
+            }
+            file_move_mutex.unlock();
+            
+            for (const auto& iter : dirList) {
+                std::cout << iter.string() << std::endl;
+            }
 
         } catch (std::filesystem::filesystem_error& moveError) {
             std::cerr << "Error moving files:\n" << moveError.what() << std::endl;

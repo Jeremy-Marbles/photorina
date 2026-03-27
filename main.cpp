@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include "photoReset.h"
 
 using namespace std::string_view_literals;
@@ -10,7 +11,22 @@ int moveWithMutexPrototype() {
     std::filesystem::path safeTest = std::filesystem::path("C:\\Users\\marbl\\Desktop\\photorina test");
     if (std::filesystem::exists("C:\\Users\\marbl\\Desktop\\photorina test\\test1") 
             && std::filesystem::exists("C:\\Users\\marbl\\Desktop\\photorina test\\test2")) {
+        std::mutex moveMutex;
+        //TODO: get file names inside directory
+        //simulate two threads moving files at the same time
+        //from test1 to test2
+        moveMutex.lock();
+        for (const auto& entry : std::filesystem::directory_iterator("C:\\Users\\marbl\\Desktop\\photorina test\\test1")) {
+            //std::cout << entry.path() << std::endl;
+            
+            std::filesystem::rename(entry.path(), safeTest / "test2" / entry.path().filename());
+        }
+        moveMutex.unlock();
 
+        for (const auto& entry : std::filesystem::directory_iterator("C:\\Users\\marbl\\Desktop\\photorina test\\test2")) {
+            std::cout << entry.path() << std::endl;
+        }
+        return 1;
     } else {
         std::cerr << "Cannot find folders" << std::endl;
         std::filesystem::create_directory("C:\\Users\\marbl\\Desktop\\photorina test\\test1");
@@ -68,6 +84,11 @@ int main() {
     //std::filesystem::path testUnit = newSort2.setCWD("C:\\Users\\marbl\\Pictures");
     
     //std::cout << testUnit.string() << std::endl;
+    
+    //moveWithMutexPrototype();
+
+    newSort2.moveToDestination("C:\\Users\\marbl\\Desktop\\photorina test\\test1", "C:\\Users\\marbl\\Desktop\\photorina test\\test2");
+
     return 0;
 }
 
