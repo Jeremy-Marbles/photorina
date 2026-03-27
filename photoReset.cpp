@@ -469,8 +469,12 @@ namespace photo {
     void photoSort::moveToDestination(std::string working, std::string destination) {
         std::filesystem::path workDir = std::filesystem::path(working);
         std::filesystem::path destDir = std::filesystem::path(destination);
+    
+        //debug
+        //std::cout << workDir.string() << std::endl;
+        //std::cout << destDir.string() << std::endl;
 
-       if (!std::filesystem::exists(workDir)) {
+        if (!std::filesystem::exists(workDir)) {
             throw std::filesystem::filesystem_error("Working directory does not exist", workDir, std::make_error_code(std::errc::no_such_file_or_directory));
         } else if (!std::filesystem::exists(destDir)) {
             std::cerr << "Warning: destination directory \'" << destDir.string() << "\' does not exist" << std::endl;
@@ -490,7 +494,7 @@ namespace photo {
 
             //validate existence of files before run, to ensure contained directories aren't considered normal files
             file_move_mutex.lock();
-            for (const auto& entry : std::filesystem::directory_iterator()) {
+            for (const auto& entry : std::filesystem::directory_iterator(workDir)) {
                 if (!std::filesystem::is_regular_file(entry.path())) {
                     std::cerr << "Warning: " << entry.path().string() << " is not a file." << std::endl;
                 }
@@ -504,9 +508,12 @@ namespace photo {
                 std::cout << iter.string() << std::endl;
             }
 
+            return;
         } catch (std::filesystem::filesystem_error& moveError) {
             std::cerr << "Error moving files:\n" << moveError.what() << std::endl;
         }
+
+        throw std::runtime_error("end of moveDestination function");
     }
 
     void photoSort::autoMove() {
