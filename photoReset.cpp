@@ -503,11 +503,20 @@ namespace photo {
                 }
             }
             file_move_mutex.unlock();
-            
-            for (const auto& iter : dirList) {
-                std::cout << iter.string() << std::endl;
-            }
 
+            //move files to destination directory, with mutex lock to prevent conflicts with other functions that may access the same directories
+            file_move_mutex.lock();
+            for (const auto& commit : dirList) {
+                std::filesystem::copy(commit, destDir / commit.filename(), std::filesystem::copy_options::overwrite_existing);
+            }
+            file_move_mutex.unlock();
+
+            //remove original files after copying
+            file_move_mutex.lock();
+            for (const auto& commit : dirList) {
+                std::filesystem::remove(commit);
+            }
+            file_move_mutex.unlock();
             return;
         } catch (std::filesystem::filesystem_error& moveError) {
             std::cerr << "Error moving files:\n" << moveError.what() << std::endl;
