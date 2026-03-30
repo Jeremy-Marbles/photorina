@@ -466,14 +466,16 @@ namespace photo {
         throw std::runtime_error("end of setDestination function:");
     }
 
+    /* Copy and paste all files (photo related or not) into destination folder 
+     * but does not copy folders inside.
+     * Deletes files in source folder after copying.
+     * Does not do anything if the folder is empty, but will still run.
+     * */
     void photoSort::moveToDestination(std::string working, std::string destination) {
+        //make sure that strings add a double // when running command
         std::filesystem::path workDir = std::filesystem::path(working);
         std::filesystem::path destDir = std::filesystem::path(destination);
     
-        //debug
-        //std::cout << workDir.string() << std::endl;
-        //std::cout << destDir.string() << std::endl;
-
         if (!std::filesystem::exists(workDir)) {
             throw std::filesystem::filesystem_error("Working directory does not exist", workDir, std::make_error_code(std::errc::no_such_file_or_directory));
         } else if (!std::filesystem::exists(destDir)) {
@@ -520,6 +522,7 @@ namespace photo {
             return;
         } catch (std::filesystem::filesystem_error& moveError) {
             std::cerr << "Error moving files:\n" << moveError.what() << std::endl;
+            return;
         }
 
         throw std::runtime_error("end of moveDestination function");
