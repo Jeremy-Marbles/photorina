@@ -507,9 +507,21 @@ namespace photo {
             file_move_mutex.unlock();
 
             //move files to destination directory, with mutex lock to prevent conflicts with other functions that may access the same directories
+            //verify files exist in destination directory after copying, before deleting original files. If files don't exist in destination, throw error and do not delete original files.
+            //TODO: make a progress indicator for moving files
             file_move_mutex.lock();
             for (const auto& commit : dirList) {
                 std::filesystem::copy(commit, destDir / commit.filename(), std::filesystem::copy_options::overwrite_existing);
+            
+                if (!std::filesystem::exists(destDir / commit.filename())) {
+                    file_move_mutex.unlock();
+                    throw std::filesystem::filesystem_error("Failed to copy file to destination", destDir / commit.filename(), std::make_error_code(std::errc::io_error));
+                }
+                if (std::filesystem::file_size(commit) != std::filesystem::file_size(destDir / commit.filename())) {
+                    file_move_mutex.unlock();
+                    throw std::filesystem::filesystem_error("File size mismatch after copying", destDir / commit.filename(), std::make_error_code(std::errc::io_error));
+                }
+
             }
             file_move_mutex.unlock();
 
@@ -529,6 +541,15 @@ namespace photo {
     }
 
     void photoSort::autoMove() {
+        toml::table settingsTable, directory;
+        try {
+            settingsTable = toml::parse_file(cfgName);
 
+            if (settingsTable.contains("Directories")) {
+
+            }
+        } catch (const toml::parse_error& parseError) {
+            std::cerr << "Error parsing TOML file:\n" << parseError.what() << std::endl;
+        }
     }
 }
