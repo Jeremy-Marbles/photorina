@@ -10,6 +10,7 @@ LensModel = 'BLANK'
 Location = 'BLANK'
 Orientation = 'BLANK'
 Parameters = false
+Format = 'BLANK'
 
 [Parameter]
 Metering = 'Matrix'

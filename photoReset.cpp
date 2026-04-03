@@ -60,7 +60,8 @@ namespace photo {
                 {"Exposure", "BLANK"},
                 {"Location", "BLANK"},
                 {"Orientation", "BLANK"},
-                {"Parameters", false}
+                {"Parameters", false},
+                {"Format", "BLANK"}
             });
 
             defaultConfig.insert("Parameter", toml::table {
@@ -521,7 +522,6 @@ namespace photo {
                     file_move_mutex.unlock();
                     throw std::filesystem::filesystem_error("File size mismatch after copying", destDir / commit.filename(), std::make_error_code(std::errc::io_error));
                 }
-
             }
             file_move_mutex.unlock();
 
@@ -546,10 +546,60 @@ namespace photo {
             settingsTable = toml::parse_file(cfgName);
 
             if (settingsTable.contains("Directories")) {
-
+                directory = *settingsTable["Directories"].as_table();
+            } else {    
+                throw std::runtime_error("No 'Directories' table found in settings.toml");
             }
         } catch (const toml::parse_error& parseError) {
             std::cerr << "Error parsing TOML file:\n" << parseError.what() << std::endl;
+            throw;
+        }
+
+        try {
+            std::vector<std::filesystem::path> dirList;
+
+            std::filesystem::path workDir = std::filesystem::path(directory["CWD"].value<std::string>().value_or(""));
+            std::filesystem::path destDir = std::filesystem::path(directory["Destination"].value<std::string>().value_or(""));
+        
+            if (!std::filesystem::exists(workDir)) {
+                throw std::filesystem::filesystem_error("Working directory does not exist", workDir, std::make_error_code(std::errc::no_such_file_or_directory));
+            } else if (!std::filesystem::exists(destDir)) {
+                throw std::filesystem::filesystem_error("Destination directory does not exist", destDir, std::make_error_code(std::errc::no_such_file_or_directory));
+            }
+
+            file_move_mutex.lock();
+            for (const auto& entry : std::filesystem::directory_iterator(workDir)) {
+                if (!std::filesystem::is_regular_file(entry.path())) {
+                    std::cerr << "Warning: " << entry.path().string() << " is not a file" << std::endl;
+                } else {
+                    dirList.push_back(entry.path());
+                }
+            }
+            file_move_mutex.unlock();
+            
+            file_move_mutex.lock();
+            for (const auto& commit : dirList) {
+                std::filesystem::copy(commit, destDir / commit.filename(), std::filesystem::copy_options::overwrite_existing);
+                if (!std::filesystem::exists(destDir / commit.filename())) {
+                    file_move_mutex.unlock();
+                    throw std::filesystem::filesystem_error("Failed to copy file to destination", destDir / commit.filename(), std::make_error_code(std::errc::io_error));
+                }
+                if (std::filesystem::file_size(commit) != std::filesystem::file_size(destDir / commit.filename())) {
+                    file_move_mutex.unlock();
+                    throw std::filesystem::filesystem_error("File size mismatch after copying", destDir / commit.filename(), std::make_error_code(std::errc::io_error));
+                }
+            }
+            file_move_mutex.unlock();
+
+            file_move_mutex.lock();
+            for (const auto& commit : dirList) {
+                std::filesystem::remove(commit);
+            }
+            file_move_mutex.unlock();
+            return;
+        } catch (const std::filesystem::filesystem_error& fsError) {
+            std::cerr << "Filesystem error:\n" << fsError.what() << std::endl;
+            throw;
         }
     }
 }
