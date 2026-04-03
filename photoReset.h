@@ -50,7 +50,7 @@ namespace photo {
             photoSort();
             void populateCWD();
 
-            //the only mutators that should touch the toml
+            //the only mutators that should touch the toml in photoSort class
             //takes input argv
             std::filesystem::path setCWD(std::string direct);
             std::filesystem::path setDestination(std::string direct);
@@ -61,6 +61,9 @@ namespace photo {
             //semi mutated version of moveToDestination
             //-a = pulls from directories on record in the toml file
             void autoMove();
+        
+            //-m = manual selection of parameters to sort photos by
+            void selectMove(int argc, char** argv);
         };
 
 }

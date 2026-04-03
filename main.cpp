@@ -39,7 +39,7 @@ int moveWithMutexPrototype() {
     throw std::runtime_error("end of mutex prototype");
 }
 
-int main() {
+int main(int __argc, char** __argv) {
 
     photo::photoSettings newSort;
 
