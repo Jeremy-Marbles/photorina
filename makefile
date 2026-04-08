@@ -34,7 +34,7 @@ rebuild: clean all
 # Build and run in one command
 run: $(TARGET)
 	@echo Running $(TARGET)...
-	@$(TARGET)
+	@$(TARGET) $(ARGS)
 
 # Debug build with symbols
 debug: CXXFLAGS += $(DEBUGFLAGS)

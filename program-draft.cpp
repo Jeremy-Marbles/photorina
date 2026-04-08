@@ -2,6 +2,7 @@
 #include <thread>
 #include "photoReset.h"
 
+//TODO: make a program for each operating system instead of one universal check.
 /* Step by step draft of procedure:
  * 1) on first run, initiate photosettings constructor
  * 2) verify settings.toml is created before proceeding to run command
@@ -16,43 +17,75 @@
  * -sc -> setCWD, takes 1 string path.
  * */
 
-int draftmain(int __argc, char** __argv) {
+int draftmain_WIN(int __argc, char** __argv) {
 	bool settingFileValid = false;
-	int OS_val = 0; //win = 0, linux = 1, mac = 2
-			//
-	#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)
-		OS_val = 0;
-	#elif defined(__linux__) || defined(__LINUX__)
-		OS_val = 1;
-	#elif defined(__APPLE__) || defined(__MACH__)
-		OS_val = 2;
-	#else
-		OS_val = -1;
-	#endif
-	
-	//in the future, set to check for file in appdata config folder.
-	switch (OS_val) 
-	case 0: 
-	std::filesystem::path config = "C" / "Users" / username / "appdata" / roaming;
-	if (!std::filesystem::exists("")) {
-		std::cout << "windows confirmed" << std::endl;
-		const char* username = std::getenv("USERNAME");
+    //const char* username = std::getenv("USERNAME");
+    //std::filesystem::path config = "C" / "Users" / username / "appdata" / "locallow";
+    //for testing purposes, scan for settings.toml inside program directory.
+    //in the future, create the file inside a generated folder in %appdata%/locallow
+    
+    std::filesystem::path test = std::filesystem::current_path();
 
-		if (username != nullptr) {
-			std::filesystem::path config = "C" / "Users" / username / "appdata" / roaming;
-			
-		}
-	}
+    for (std::filesystem::directory_iterator it(test); it != std::filesystem::directory_iterator(); ++it) {
+        if (std::filesystem::exists(test / "settings.toml")) {
+            settingFileValid = true;
+            break;
+        }
+    }
 
-	case 1:
-	if (!std::filesystem::exists("")) {
+    if (!settingFileValid) {
+        //debug
+        //std::cerr << "Settings file not found. Creating default settings.toml..." << std::endl;
+        std::cout << "First time configuration:" << std::endl;
+        photo::photoSettings initPhotos;
+        
+        settingFileValid = true;
+    } 
+    if (settingFileValid) {
+        //debug
+        //std::cout << "Verified settings.toml." << std::endl;
+        photo::photoSort newSort;
+        
+        
+    }
 
-	}
+    return 0;
+}
 
-	case 2:
-	if (!std::filesystem::exists("")) {
+int draftmain_LINUX(int __argc, char** __argv) {
+    
+}
 
-	}
-	photo::photoSettings initPhotos;
 
+//other notes / concepted functions:
+int moveWithMutexPrototype() {
+    std::filesystem::path safeTest = std::filesystem::path("C:\\Users\\marbl\\Desktop\\photorina test");
+    if (std::filesystem::exists("C:\\Users\\marbl\\Desktop\\photorina test\\test1") 
+            && std::filesystem::exists("C:\\Users\\marbl\\Desktop\\photorina test\\test2")) {
+        std::mutex moveMutex;
+        //TODO: get file names inside directory
+        //simulate two threads moving files at the same time
+        //from test1 to test2
+        moveMutex.lock();
+        for (const auto& entry : std::filesystem::directory_iterator("C:\\Users\\marbl\\Desktop\\photorina test\\test1")) {
+            //std::cout << entry.path() << std::endl;
+            
+            std::filesystem::rename(entry.path(), safeTest / "test2" / entry.path().filename());
+        }
+        moveMutex.unlock();
+
+        for (const auto& entry : std::filesystem::directory_iterator("C:\\Users\\marbl\\Desktop\\photorina test\\test2")) {
+            std::cout << entry.path() << std::endl;
+        }
+        return 1;
+    } else {
+        std::cerr << "Cannot find folders" << std::endl;
+        std::filesystem::create_directory("C:\\Users\\marbl\\Desktop\\photorina test\\test1");
+        std::filesystem::create_directory("C:\\Users\\marbl\\Desktop\\photorina test\\test2");
+        
+        std::cout << "Rerun mutex prototype" << std::endl;
+        return -1;
+    }
+
+    throw std::runtime_error("end of mutex prototype");
 }

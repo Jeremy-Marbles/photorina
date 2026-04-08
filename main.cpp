@@ -7,39 +7,7 @@ using namespace std::string_view_literals;
 //Notes:
 //In the future, move toml to Appdata or ~/.config for better user experience and to avoid issues with permissions in CWD.
 
-int moveWithMutexPrototype() {
-    std::filesystem::path safeTest = std::filesystem::path("C:\\Users\\marbl\\Desktop\\photorina test");
-    if (std::filesystem::exists("C:\\Users\\marbl\\Desktop\\photorina test\\test1") 
-            && std::filesystem::exists("C:\\Users\\marbl\\Desktop\\photorina test\\test2")) {
-        std::mutex moveMutex;
-        //TODO: get file names inside directory
-        //simulate two threads moving files at the same time
-        //from test1 to test2
-        moveMutex.lock();
-        for (const auto& entry : std::filesystem::directory_iterator("C:\\Users\\marbl\\Desktop\\photorina test\\test1")) {
-            //std::cout << entry.path() << std::endl;
-            
-            std::filesystem::rename(entry.path(), safeTest / "test2" / entry.path().filename());
-        }
-        moveMutex.unlock();
-
-        for (const auto& entry : std::filesystem::directory_iterator("C:\\Users\\marbl\\Desktop\\photorina test\\test2")) {
-            std::cout << entry.path() << std::endl;
-        }
-        return 1;
-    } else {
-        std::cerr << "Cannot find folders" << std::endl;
-        std::filesystem::create_directory("C:\\Users\\marbl\\Desktop\\photorina test\\test1");
-        std::filesystem::create_directory("C:\\Users\\marbl\\Desktop\\photorina test\\test2");
-        
-        std::cout << "Rerun mutex prototype" << std::endl;
-        return -1;
-    }
-
-    throw std::runtime_error("end of mutex prototype");
-}
-
-int main(int __argc, char** __argv) {
+/* int main(int __argc, char** __argv) {
 
     photo::photoSettings newSort;
 
@@ -69,6 +37,18 @@ int main(int __argc, char** __argv) {
 
     newSort2.autoMove();
     return 0;
+} */
+struct ParsedCommand {
+    std::string flag;
+    std::vector<std::string> args;
+};
+
+int main(int argc, char** argv) {
+    //if no argument, display a usage line, error line and "Type photorina -h to see a list of options"
+    if (argc == 1) {
+        std::cout << "Usage: photorina [OPTION] <path>" << std::endl;
+        std::cerr << "photorina.exe: error: you must provide a command and path to your folder" << std::endl;
+        std::cout << "Type photorina -h or photorina --help to see a list of options and usage guide" << std::endl;
+        return 0;
+    }
 }
-
-
