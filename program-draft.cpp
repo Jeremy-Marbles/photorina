@@ -26,9 +26,15 @@ struct ParseCommand {
 void printHelp(const char* programName) {
     std::cout << "Photorina - Photo Sorting and Organization Tool \n\n";
     std::cout << "Usage: " << programName << " [OPTIONS]\n\n";
-    
+    std::cout << "Options:\n";
+    std::cout << "  -h, --help              Display this help message and exit\n";
+    std::cout << "\n";
+
     std::cout << "Examples:\n";
-    std::cout << " " << programName << " -sd \"C:\\Photos\\Sorted\"\n";
+    std::cout << "  " << programName << " -sd \"C:\\Photos\\Sorted\"\n";
+    std::cout << "  " << programName << " -sc \"C:\\Photos\\Raw\" -sd \"C:\\Photos\\Sorted\"\n";
+    std::cout << "  " << programName << " -b \"C:\\Photos\\Raw\" \"C:\\Photos\\Sorted\"\n";
+    std::cout << "  " << programName << " -a\n\n";
 }
 
 std::vector<ParseCommand> parseArguments(int argc, char** argv) {
@@ -46,16 +52,47 @@ std::vector<ParseCommand> parseArguments(int argc, char** argv) {
         else if (arg == "-sd") {
             if (i + i >= argc) {
                 std::cerr << "Error: -sd requires a path argument" << std::endl;
+                printHelp(argv[0]);
+                std::exit(1);
             }
+            cmd.args.push_back(argv[i + 1]);
+            i += 2;
         }
+        else if (arg == "-b") {
+            if (i + 2 >= argc) {
+                std::cerr << "Error: -b requires two arguments (source and destination)" << std::endl;
+                printHelp(argv[0]);
+                std::exit(1);
+            }
+            cmd.args.push_back(argv[i + 1]);
+            cmd.args.push_back(argv[i + 2]);
+            i += 3;
+        }
+        else if (arg == "a") {
+            i += 1;
+        }
+        //TODO: finish working on -m
+        // else if (arg == "-m") {
+        //
+        // }
+        else {
+            std::cerr << "Error: Unknown flag '" << arg << "'" << std::endl;
+            printHelp(argv[0]);
+            std::exit(1);
+        }
+
+        commands.push_back(cmd);
     }
+
+    return commands;
 }
 
+//------------------------------------------------------------------------------------------------------
 int draftmain_WIN(int argc, char** argv) {
     if (argc == 1) {
         std::cout << "Usage:" <<  argv[0] << " [OPTION] <path>" << std::endl;
         std::cerr << argv[0] << ": error: you must provide a command and path to your folder" << std::endl;
-        std::cout << "Type " << argv[0] << " -h or " << argv[0] << " --help to see a list of options and usage guide" << std::endl;
+        std::cout << "Type " << argv[0] << " -h or " << argv[0] << " --help to see a list of options and the usage guide" << std::endl;
         std::cout << "Note: first time run initiates a configuration set up. Please make sure to follow the instructions when prompted" << std::endl;
         return 0;
     }
@@ -94,10 +131,19 @@ int draftmain_WIN(int argc, char** argv) {
         //debug
         //std::cout << "Verified settings.toml." << std::endl;
         photo::photoSort newSort;
-               
-        
+        std::vector<ParseCommand> commands = parseArguments(argc, argv);
+        try {
+            for (const auto& cmd : commands) {
+                if (cmd.flag == "-sd") {
+                    std::filesystem::path dest = newSort.setDestination(cmd.args[0]);
+                    std::cout << "Destination set to: " << dest.string() << std::endl;
+                }
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Fatal error: " << e.what() << std::endl;
+            return 2;
+        }    
     }
-
     return 0;
 }
 
