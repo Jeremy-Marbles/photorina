@@ -45,12 +45,30 @@ struct ParsedCommand {
     std::vector<std::string> args;
 };
 
+void printHelp(const char* programName) {
+    std::cout << "Photorina - Photo Sorting and Organization Utility\n\n";
+    std::cout << "Usage: " << programName << " [OPTIONS]\n\n";
+
+    std::cout << "On first run, the program automatically detects and sets the main\n";
+    std::cout << "designated photos folder as the 'destination directory'\n";
+
+    std::cout << "Set your designated destination folder by using '-sd' followed by the path in the command line\n";
+    std::cout << "(Right click on a folder on your File Explorer and click 'Copy as Path' to get the full path name)\n";
+
+    std::cout << "Options:\n";
+    std::cout << "  -h, --help              Display this help message and exit\n";
+    std::cout << "  -sd <path>              Set destination directory for photo sorting\n";
+    std::cout << "  -sc <path>              Set source directory that contains current photos\n";
+    std::cout << "  -b <source> <dest>      Move all files from source to destination\n";
+    std::cout << "  -a                      Automatically move files with settings from your settings\n";
+}
+
 int main(int argc, char** argv) {
     //if no argument, display a usage line, error line and "Type photorina -h to see a list of options"
     if (argc == 1) {
-        std::cout << "Usage: photorina [OPTION] <path>" << std::endl;
-        std::cerr << "photorina.exe: error: you must provide a command and path to your folder" << std::endl;
-        std::cout << "Type photorina -h or photorina --help to see a list of options and the usage guide" << std::endl;
+        std::cout << "Usage:" << argv[0] << " [OPTION] <path>" << std::endl;
+        std::cerr << argv[0] << ".exe: error: you must provide a command and path to your folder" << std::endl;
+        std::cout << "Type " << argv[0] << " -h or " << argv[0] << " --help to see a list of options and the usage guide" << std::endl;
         std::cout << "Note: first time run initiates a configuration set up. Please make sure to follow the instructions when prompted" << std::endl;
         return 0;
     }
@@ -71,6 +89,7 @@ int main(int argc, char** argv) {
     if (!settingFileValid) {
         std::cout << "Warning - Settings file not found." << std::endl;
         std::cout << "Warning - First time configuration starting..." << std::endl;
+        std::cout << "Warning - PLease follow the incoming prompts as they appear." << std::endl;
         photo::photoSettings initPhotos;
         
         for (std::filesystem::directory_iterator it(test); it != std::filesystem::directory_iterator(); ++it) {
@@ -89,11 +108,17 @@ int main(int argc, char** argv) {
         std::vector<ParsedCommand> commands;
         for (int i = 0; i < argc; ++i){
             std::cout << "arguments: " << argc << std::endl;           
+            ParsedCommand cmd;
+            std::string args = argv[i];
+            cmd.flag = args;
+            commands.push_back(cmd);
+            
         }
         try {
             for (const auto& cmd : commands) {
+
                 if (cmd.flag =="-sd") {
-//                  std::cout << "Flag: " << cmd << std::end;
+                  std::cout << "Flag: " << cmd.flag << std::endl;
                 }
             }
         } catch (const std::exception& e) {

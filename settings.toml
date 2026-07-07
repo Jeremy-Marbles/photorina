@@ -1,16 +1,16 @@
 [Directories]
-CWD = 'E:\Documents (E)\neovim\photorina'
+CWD = 'C:Users\marbl\Pictures'
 Destination = 'BLANK'
 
 [Metadata]
 Author = 'BLANK'
 Date = '2026-02-13'
 Exposure = 'BLANK'
+Format = 'BLANK'
 LensModel = 'BLANK'
 Location = 'BLANK'
 Orientation = 'BLANK'
 Parameters = false
-Format = 'BLANK'
 
 [Parameter]
 Metering = 'Matrix'
