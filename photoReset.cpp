@@ -213,6 +213,18 @@ namespace photo {
         throw std::runtime_error("end of addCamera function:");
     }
 
+    void photoSettings::listCamera() {
+        try {
+            toml::table settingsTable = toml::parse_file(cfgName);
+            if (settingsTable.contains("Camera")) {
+                std::cout << "Debug: camera toml array found" << std::endl;
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Failed to fetch settings file: " << e.what() << std::endl;
+            std::cerr << "" << std::endl;
+        }
+    }
+
     int photoSettings::deleteCamera(std::string cameraModel) {
         try {
             toml::table settingsTable = toml::parse_file(cfgName);

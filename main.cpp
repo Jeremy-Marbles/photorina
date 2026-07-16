@@ -45,6 +45,15 @@ struct ParsedCommand {
     std::vector<std::string> args;
 };
 
+std::vector<ParsedCommand> parseArguments(int argc, char** argv) {
+    std::vector<ParsedCommand> commands;
+    for (int i = 1; i < argc;) {
+
+    }
+
+    return commands;
+}
+
 void printHelp(const char* programName) {
     std::cout << "Photorina - Photo Sorting and Organization Utility\n\n";
     std::cout << "Usage: " << programName << " [OPTIONS]\n\n";
@@ -115,6 +124,7 @@ int main(int argc, char** argv) {
             ParsedCommand cmd;
             std::string args = argv[i];
             cmd.flag = args;
+            cmd.args.push_back(args);
             commands.push_back(cmd);
             
         }
@@ -157,6 +167,8 @@ int main(int argc, char** argv) {
                     //-specify that user must input the "camera model" to be removed from list
                     //-give option to delete all cameras (and go to a double check option to make sure they want to remove all)
                     //-run deleteCamera function
+                } else if (cmd.flag == "-lc") {
+                    photo::photoSettings listCamera;
                 } else {
                     std::cerr << "Error: Unknown flag '" << cmd.flag << "'. Use -h or --help for usage information." << std::endl;
                 }

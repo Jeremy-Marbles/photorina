@@ -23,9 +23,11 @@ namespace photo {
 
         public:
             photoSettings();
+            
             std::vector<std::string> addCamera();
             toml::array addCamera(std::vector<std::string> cameraInfo);
             int deleteCamera(std::string cameraModel);
+            void listCamera();
 
             toml::table setMetadata(std::string key, std::string value);
             toml::table setParameter(std::string key, std::string value);
