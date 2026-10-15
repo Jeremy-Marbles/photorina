@@ -218,6 +218,16 @@ namespace photo {
             toml::table settingsTable = toml::parse_file(cfgName);
             if (settingsTable.contains("Camera")) {
                 std::cout << "Debug: camera toml array found" << std::endl;
+
+                toml::array& cameraArray = *settingsTable["Camera"].as_array();
+                int i = 1;
+                for (const auto& camera : cameraArray) {
+                    auto cameraTable = camera.as_table();
+                    std::string brand = cameraTable->at("CameraBrand").value<std::string>().value_or("");
+                    std::string model = cameraTable->at("CameraModel").value<std::string>().value_or("");
+                    std::cout << i << ": Camera Brand: " << brand << "\n   Camera Model: " << model << std::endl;
+                    i++;
+                }
             }
         } catch (const std::exception& e) {
             std::cerr << "Failed to fetch settings file: " << e.what() << std::endl;

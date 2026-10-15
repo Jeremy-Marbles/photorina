@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <thread>
 #include "photoReset.h"
 
@@ -40,21 +41,13 @@ using namespace std::string_view_literals;
 } 
 make run ARGS=    
 */
-struct ParsedCommand {
-    std::string flag;
-    std::vector<std::string> args;
+struct inputStorage {
+    std::vector<int> additionals;
+    std::vector<std::string> parsedArgv;
 };
 
-std::vector<ParsedCommand> parseArguments(int argc, char** argv) {
-    std::vector<ParsedCommand> commands;
-    for (int i = 1; i < argc;) {
 
-    }
-
-    return commands;
-}
-
-void printHelp(const char* programName) {
+void help(const char* programName) {
     std::cout << "Photorina - Photo Sorting and Organization Utility\n\n";
     std::cout << "Usage: " << programName << " [OPTIONS]\n\n";
 
@@ -76,17 +69,61 @@ void printHelp(const char* programName) {
     std::cout << "  -setting                Print out the current settings\n";
 }
 
-int main(int argc, char** argv) {
+//command line interface parsing basic algorithm
+//Receive commands stored in argv array, and process them
+//Store string to int into struct array and process on main function (make appropriate command calls)
+int CLI_Parse(int argc, char** argv, inputStorage& storage) {
+    //debug
+    std::cout << argc << std::endl;
     //if no argument, display a usage line, error line and "Type photorina -h to see a list of options"
-    if (argc == 1) {
-        std::cout << "Usage:" << argv[0] << " [OPTION] <path>" << std::endl;
+    if (argc < 2) {
+        std::cout << "Usage: " << argv[0] << " [OPTION] <path>" << std::endl;
         std::cerr << argv[0] << ": error: you must provide a command and path to your folder" << std::endl;
         std::cout << "Type " << argv[0] << " -h or " << argv[0] << " --help to see a list of options and the usage guide" << std::endl;
         std::cout << "Note: first time run initiates a configuration set up. Please make sure to follow the instructions when prompted" << std::endl;
+        return -1;
+    }
+
+    if (argv[1] == std::string("-h") || argv[1] == std::string("--help")) {
+        help(argv[0]);
         return 0;
     }
 
+    if (argv[1] == std::string("-c")) {
+        storage.parsedArgv.push_back(argv[1]);
+        return 1;
+    }
+
+    if (argv[1] == std::string("-lc")) {
+        storage.parsedArgv.push_back(argv[1]);
+        return 2;
+    }
+
+    if (argv[1] == std::string("-dc")) {
+        storage.parsedArgv.push_back(argv[1]);
+        //TODO: combine camera details with argv[2] and after to form the full camera name in one string
+        if (argc > 2) {
+            std::string cameraName;
+            for (int i = 2; i < argc; ++i) {
+                if (i > 2) cameraName += " ";
+                cameraName += argv[i];
+            }
+            //TODO: figure logic for multiple camera inputs, also for delimiters i.e inputs with "quotation marks"
+            //Require commas to split between multiple camera names
+            storage.parsedArgv.push_back(cameraName);
+        }
+        return 3;
+    }
+
+    throw std::runtime_error("Unknown command. Use -h or --help for a list of options.");
+}
+
+
+int main(int argc, char** argv) {
+    inputStorage storage;
     bool settingFileValid = false;
+    int parseReturn = CLI_Parse(argc, argv, storage);
+    std::cout << "CLI_Parse returned: " << parseReturn << std::endl;
 
     std::filesystem::path test = std::filesystem::current_path();
 
@@ -112,71 +149,37 @@ int main(int argc, char** argv) {
 
             settingFileValid = true;
             std::cout << "'settings.toml' created in APPDATA/locallow/photorina" << std::endl;
+            break;
         }
+
+        std::cout << "COnfiguration complete. Please run the program again: " << argv[0] << " -h for more options." << std::endl;
+        return 0;
     }
 
     if (settingFileValid) {
-//  std::cout << "Verified settings.toml." << std::endl;
-        photo::photoSort newSort;
-        std::vector<ParsedCommand> commands;
-        for (int i = 1; i < argc; ++i){
-            std::cout << "arguments: " << argc << std::endl;           
-            ParsedCommand cmd;
-            std::string args = argv[i];
-            cmd.flag = args;
-            cmd.args.push_back(args);
-            commands.push_back(cmd);
+        std::cout << "Input stored: " << storage.parsedArgv[0] << std::endl; 
+        //TODO: rewrite if statements into switch-case structure
+        if (parseReturn == -1) {
+            throw std::runtime_error("No given option. Stop");
+        }
+
+        if (parseReturn == 0) {
+            return 0;
+        }
+
+        photo::photoSettings initPhotos;
+
+        if (parseReturn == 1) {
+            // Add Camera command
+            std::vector<std::string> cameraList = initPhotos.addCamera();
+            initPhotos.addCamera(cameraList);
+        }
+
+        if (parseReturn == 2) {
+            initPhotos.listCamera();
             
         }
-        try {
-            for (const auto& cmd : commands) {
-//              std::cout << "Flag: " << cmd.flag << std::endl;
-                if (cmd.flag =="-sd") {
 
-                    if (cmd.args.size() < 2) {
-                        std::cerr << "Error: Missing argument for -sd flag. Please provide a path." << std::endl;
-                        return 1;
-                    }
-                    std::string destinationPath = cmd.args[1];
-                    newSort.setDestination(destinationPath);
-                } else if (cmd.flag == "-sc") {
-                    if (cmd.args.size() < 2) {
-                        std::cerr << "Error: Missing argument for -sc flag. Please provide a path." << std::endl;
-                        return 1;
-                    }
-                    std::string sourcePath = cmd.args[1];
-                    newSort.setCWD(sourcePath);
-                } else if (cmd.flag == "-b") {
-                    if (cmd.args.size() < 3) {
-                        std::cerr << "Error: Missing arguments for -b flag. Please provide source and destination paths." << std::endl;
-                        return 1;
-                    }
-                    std::string sourcePath = cmd.args[1];
-                    std::string destinationPath = cmd.args[2];
-                    newSort.moveToDestination(sourcePath, destinationPath);
-                } else if (cmd.flag == "-a") {
-                    newSort.autoMove();
-                    //TODO: add manual selection of parameters to sort photos by
-                } else if (cmd.flag == "-h" || cmd.flag == "--help") {
-                    printHelp(argv[0]);
-                } else if (cmd.flag == "-c") {
-                    photo::photoSettings addCamera;
-                } else if (cmd.flag == "-dc") {
-                    //logic for deleting camera from list
-                    //-print out current camera list
-                    //-specify that user must input the "camera model" to be removed from list
-                    //-give option to delete all cameras (and go to a double check option to make sure they want to remove all)
-                    //-run deleteCamera function
-                } else if (cmd.flag == "-lc") {
-                    photo::photoSettings listCamera;
-                } else {
-                    std::cerr << "Error: Unknown flag '" << cmd.flag << "'. Use -h or --help for usage information." << std::endl;
-                }
-            }
-        } catch (const std::exception& e) {
-            std::cerr << "Fatal error: " << e.what() <<std::endl;
-            return 2;
-        }
     }
 
     
