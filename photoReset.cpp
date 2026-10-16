@@ -235,6 +235,20 @@ namespace photo {
         }
     }
 
+    //TODO: add a utility command that lists out current camera models and lets user choose which list position camera to delete
+    //Mirroring current implementation of addCamera()
+    std::string photoSettings::deleteCamera() {
+        try {
+            toml::table settingsTable = toml::parse_file(cfgName);
+            if (settingsTable.contains("Camera")) {
+                //test first 
+                std::cout << "Camera toml array found" << std::endl;
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Failed to fetch settings file: " << e.what() << std::endl;
+            return -1;
+        }
+    }
     int photoSettings::deleteCamera(std::string cameraModel) {
         try {
             toml::table settingsTable = toml::parse_file(cfgName);

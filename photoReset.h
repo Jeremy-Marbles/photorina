@@ -26,6 +26,7 @@ namespace photo {
             
             std::vector<std::string> addCamera();
             toml::array addCamera(std::vector<std::string> cameraInfo);
+            std::string deleteCamera();
             int deleteCamera(std::string cameraModel);
             void listCamera();
 
