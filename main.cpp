@@ -103,14 +103,9 @@ int CLI_Parse(int argc, char** argv, inputStorage& storage) {
         storage.parsedArgv.push_back(argv[1]);
         //TODO: combine camera details with argv[2] and after to form the full camera name in one string
         if (argc > 2) {
-            std::string cameraName;
-            for (int i = 2; i < argc; ++i) {
-                if (i > 2) cameraName += " ";
-                cameraName += argv[i];
-            }
             //TODO: figure logic for multiple camera inputs, also for delimiters i.e inputs with "quotation marks"
             //Require commas to split between multiple camera names
-            storage.parsedArgv.push_back(cameraName);
+            
         }
         return 3;
     }
@@ -159,25 +154,29 @@ int main(int argc, char** argv) {
     if (settingFileValid) {
         std::cout << "Input stored: " << storage.parsedArgv[0] << std::endl; 
         //TODO: rewrite if statements into switch-case structure
-        if (parseReturn == -1) {
-            throw std::runtime_error("No given option. Stop");
-        }
-
-        if (parseReturn == 0) {
-            return 0;
-        }
-
         photo::photoSettings initPhotos;
-
-        if (parseReturn == 1) {
-            // Add Camera command
-            std::vector<std::string> cameraList = initPhotos.addCamera();
-            initPhotos.addCamera(cameraList);
-        }
-
-        if (parseReturn == 2) {
-            initPhotos.listCamera();
+        switch (parseReturn) {
             
+            case -1:
+                throw std::runtime_error("No given option. Stop");
+            case 0:
+                return 0;
+
+            case 1: {
+                std::vector<std::string> cameraList = initPhotos.addCamera();
+                initPhotos.addCamera(cameraList);
+                break;
+            }
+
+            case 2: {
+                initPhotos.listCamera();
+                break;
+            }
+            
+            case 3: {
+                std::cout << storage.parsedArgv[1] << std::endl;
+                //initPhotos.deleteCamera();  
+            }
         }
 
     }
