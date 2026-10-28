@@ -29,3 +29,8 @@ OS = 'Windows'
 CameraBrand = 'Sony'
 CameraModel = 'A7CIII'
 Formats = [ '.ARW' ]
+
+[[Camera]]
+CameraBrand = 'Canon'
+CameraModel = 'EOS r9'
+Formats = [ '.CR3', '.CRW' ]
