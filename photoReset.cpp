@@ -235,21 +235,57 @@ namespace photo {
         }
     }
 
-    //TODO: add a utility command that lists out current camera models and lets user choose which list position camera to delete
-    //Mirroring current implementation of addCamera()
-    std::string photoSettings::deleteCamera() {
+    //Two pronged approach for deleting cameras:
+    //1. toml::array deleteCamera. Get camera model as input and compare to array values, then return a toml::array of matching array.
+    //2. int deleteCamera. Receive the camera to be deleted as a toml::array and remove it from the settings file.
+
+    toml::array photoSettings::deleteCamera(std::string cameraModel) {
         try {
+        
             toml::table settingsTable = toml::parse_file(cfgName);
             if (settingsTable.contains("Camera")) {
                 //test first 
-                std::cout << "Camera toml array found" << std::endl;
+                // std::cout << "Camera toml array found" << std::endl;
+                // return *settingsTable["Camera"].as_array();
+
+                //Split string for information and compare with camera array to find matching camera
+                std::vector<std::string> cameraInfo;
+                std::istringstream iss(cameraModel);
+                std::string token;
+                do { // splits on whitespace
+                    std::transform(token.begin(), token.end(), token.begin(),
+                                   [](unsigned char c) { return std::tolower(c); });
+                    cameraInfo.push_back(token);
+                } while (iss >> token);
+
+                std::cout << cameraInfo[1] << std::endl;                
+
+                toml::array matchingCameras;
+                toml::array& cameraArray = *settingsTable["Camera"].as_array();
+                for (const auto& camera : cameraArray) {
+                    bool isMatch = true;
+                    for (const auto& info : cameraInfo) {
+                        if (camera.as_table()->find(info) == camera.as_table()->end()) {
+                            isMatch = false;
+                            break;
+                        }
+                    }
+                    if (isMatch) {
+                        matchingCameras.push_back(camera);
+                    }
+                }
+
+                
+            return matchingCameras;
             }
         } catch (const std::exception& e) {
             std::cerr << "Failed to fetch settings file: " << e.what() << std::endl;
-            return -1;
+            throw std::runtime_error("Failed to fetch settings file in deleteCamera");
         }
+
+        throw std::runtime_error("end of deleteCamera function:");
     }
-    int photoSettings::deleteCamera(std::string cameraModel) {
+    int photoSettings::deleteCamera(toml::array camera) {
         try {
             toml::table settingsTable = toml::parse_file(cfgName);
             
@@ -257,18 +293,9 @@ namespace photo {
                 toml::array& cameraArray = *settingsTable["Camera"].as_array();
                 
                 for (size_t i = 0; i < cameraArray.size(); i++) {
-                    auto modelTable = cameraArray[i].as_table();
-                    auto getModel = modelTable->at("CameraModel").value<std::string>();
-
-                    if (*getModel == cameraModel) {
-                        cameraArray.erase(cameraArray.begin() + i);
-                        std::ofstream configOut(cfgName);
-                        configOut << settingsTable;
-                        configOut.close();
-                        break;
-                    }
+                
                 }
-                return 1;
+
             }
 
         } catch (const std::exception& e){

@@ -61,7 +61,7 @@ void help(const char* programName) {
     std::cout << "  -h, --help              Display this help message\n";
     std::cout << "  -c                      Activate 'Add Camera' utility command\n";
     std::cout << "  -lc                     Lists cameras that are added\n";
-    std::cout << "  -dc <camera name>       Delete camera listed in settings\n";
+    std::cout << "  -dc '<camera name>'     Delete camera listed in settings\n";
     std::cout << "  -sd <path>              Set destination directory for photo sorting\n";
     std::cout << "  -sc <path>              Set source directory that contains current photos\n";
     std::cout << "  -b <source> <dest>      Move all files from source to destination\n";
@@ -74,7 +74,7 @@ void help(const char* programName) {
 //Store string to int into struct array and process on main function (make appropriate command calls)
 int CLI_Parse(int argc, char** argv, inputStorage& storage) {
     //debug
-    std::cout << argc << std::endl;
+    //std::cout << argc << std::endl;
     //if no argument, display a usage line, error line and "Type photorina -h to see a list of options"
     if (argc < 2) {
         std::cout << "Usage: " << argv[0] << " [OPTION] <path>" << std::endl;
@@ -102,11 +102,14 @@ int CLI_Parse(int argc, char** argv, inputStorage& storage) {
     if (argv[1] == std::string("-dc")) {
         storage.parsedArgv.push_back(argv[1]);
         //TODO: combine camera details with argv[2] and after to form the full camera name in one string
-        if (argc > 2) {
+        if (argc < 3) {
             //TODO: figure logic for multiple camera inputs, also for delimiters i.e inputs with "quotation marks"
             //Require commas to split between multiple camera names
-            
+            std::cerr << "Error: You must provide the camera name(s) after the -dc option." << std::endl;
+            return -1;
         }
+        //Steps
+        storage.parsedArgv.push_back(argv[2]); //assume ' ' is used in input for camera name
         return 3;
     }
 
@@ -147,13 +150,12 @@ int main(int argc, char** argv) {
             break;
         }
 
-        std::cout << "COnfiguration complete. Please run the program again: " << argv[0] << " -h for more options." << std::endl;
+        std::cout << "Configuration complete. Please run the program again: " << argv[0] << " -h for more options." << std::endl;
         return 0;
     }
 
     if (settingFileValid) {
         std::cout << "Input stored: " << storage.parsedArgv[0] << std::endl; 
-        //TODO: rewrite if statements into switch-case structure
         photo::photoSettings initPhotos;
         switch (parseReturn) {
             
@@ -175,7 +177,19 @@ int main(int argc, char** argv) {
             
             case 3: {
                 std::cout << storage.parsedArgv[1] << std::endl;
-                //initPhotos.deleteCamera();  
+
+                //TODO: fix bad_alloc error stemming from argv[2]
+                //"test" string is ok, does not trigger bad_alloc
+                //"test spaced" string is ok. bug might be caused by how argv[2] is being parsed or passed.
+                //a direct call to argv[2] over the storage.parsedArgv struct does not trigger the bad_alloc error.
+                //FIXED: parsedArgv should not go over index 1 else it calls the vector beyond its size and triggers bad_alloc
+
+
+                toml::array cameraToDelete = initPhotos.deleteCamera(storage.parsedArgv[1]);
+                
+                std::cout << cameraToDelete << std::endl;
+                
+                break;
             }
         }
 
