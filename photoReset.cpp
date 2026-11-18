@@ -130,7 +130,7 @@ namespace photo {
                     cameras.push_back(toml::table{
                         {"CameraBrand", camInfo[0]},
                         {"CameraModel", camInfo[1]},
-                        {"Formats", toml::array{camInfo[2]} }     //TODO: get multiple formats into this array
+                        {"Formats", toml::array{camInfo[2]} }     //TODO: get multiple formats into this array --complete--
                     });
                     setParameters.insert_or_assign("Camera", cameras);
                 }
@@ -244,10 +244,6 @@ namespace photo {
         
             toml::table settingsTable = toml::parse_file(cfgName);
             if (settingsTable.contains("Camera")) {
-                //test first 
-                // std::cout << "Camera toml array found" << std::endl;
-                // return *settingsTable["Camera"].as_array();
-
                 //Split string for information and compare with camera array to find matching camera
                 std::vector<std::string> cameraInfo;
                 std::istringstream iss(cameraModel);
@@ -258,15 +254,13 @@ namespace photo {
                     cameraInfo.push_back(token);
                 } while (iss >> token);
 
-                std::cout << cameraInfo[1] << std::endl;                
-
                 toml::array matchingCameras;
                 toml::array& cameraArray = *settingsTable["Camera"].as_array();
                 for (const auto& camera : cameraArray) {
-                    bool isMatch = true;
+                    bool isMatch = false;
                     for (const auto& info : cameraInfo) {
                         if (camera.as_table()->find(info) == camera.as_table()->end()) {
-                            isMatch = false;
+                            isMatch = true;
                             break;
                         }
                     }
@@ -275,7 +269,9 @@ namespace photo {
                     }
                 }
 
-                
+                //DEBUG
+                std::cout << "Camera Array Items" << std::endl;
+                std::cout << matchingCameras[1].as_string() << std::endl;    
             return matchingCameras;
             }
         } catch (const std::exception& e) {
@@ -285,6 +281,7 @@ namespace photo {
 
         throw std::runtime_error("end of deleteCamera function:");
     }
+
     int photoSettings::deleteCamera(toml::array camera) {
         try {
             toml::table settingsTable = toml::parse_file(cfgName);

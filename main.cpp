@@ -113,6 +113,10 @@ int CLI_Parse(int argc, char** argv, inputStorage& storage) {
         return 3;
     }
 
+    if (argv[1] == std::string ("-debug")) {
+        return 100;
+    }
+
     throw std::runtime_error("Unknown command. Use -h or --help for a list of options.");
 }
 
@@ -121,7 +125,7 @@ int main(int argc, char** argv) {
     inputStorage storage;
     bool settingFileValid = false;
     int parseReturn = CLI_Parse(argc, argv, storage);
-    std::cout << "CLI_Parse returned: " << parseReturn << std::endl;
+    //std::cout << "CLI_Parse returned: " << parseReturn << std::endl;
 
     std::filesystem::path test = std::filesystem::current_path();
 
@@ -176,7 +180,7 @@ int main(int argc, char** argv) {
             }
             
             case 3: {
-                std::cout << storage.parsedArgv[1] << std::endl;
+                //std::cout << storage.parsedArgv[1] << std::endl;
 
                 //TODO: fix bad_alloc error stemming from argv[2]
                 //"test" string is ok, does not trigger bad_alloc
@@ -186,13 +190,12 @@ int main(int argc, char** argv) {
 
 
                 toml::array cameraToDelete = initPhotos.deleteCamera(storage.parsedArgv[1]);
-                
+
                 std::cout << cameraToDelete << std::endl;
-                
+
                 break;
             }
         }
-
     }
 
     
