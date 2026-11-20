@@ -114,6 +114,7 @@ int CLI_Parse(int argc, char** argv, inputStorage& storage) {
     }
 
     if (argv[1] == std::string ("-debug")) {
+        storage.parsedArgv.push_back(argv[1]);
         return 100;
     }
 
@@ -125,7 +126,7 @@ int main(int argc, char** argv) {
     inputStorage storage;
     bool settingFileValid = false;
     int parseReturn = CLI_Parse(argc, argv, storage);
-    //std::cout << "CLI_Parse returned: " << parseReturn << std::endl;
+    std::cout << "CLI_Parse returned: " << parseReturn << std::endl;
 
     std::filesystem::path test = std::filesystem::current_path();
 
@@ -192,6 +193,28 @@ int main(int argc, char** argv) {
                 initPhotos.deleteCamera(storage.parsedArgv[1]);
 
 
+                break;
+            }
+
+            case 100: { //debug use only, meant for testing variables/functionality. delete after completion.
+                static constexpr std::string_view tomlFile = R"(
+                    [[Camera]]
+                    CameraBrand = "Fujifilm"
+                    CameraModel = "X-Pro 5"
+                    Formats = ["RAW", "JPEG"]
+
+                    [[Camera]]
+                    CameraBrand = "Canon"
+                    CameraModel = "EOS R5"
+                    Formats = ["RAW", "JPEG"]
+                )"sv;
+
+                toml::table testTable = toml::parse(tomlFile);
+                std::cout << testTable << std::endl;
+
+                if (testTable.contains("Camera")) {
+                    toml::array& cameraArray = *testTable["Camera"].as_array();
+                }
                 break;
             }
         }

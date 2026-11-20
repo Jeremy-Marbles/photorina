@@ -218,8 +218,6 @@ namespace photo {
         try {
             toml::table settingsTable = toml::parse_file(cfgName);
             if (settingsTable.contains("Camera")) {
-                std::cout << "Debug: camera toml array found" << std::endl;
-
                 toml::array& cameraArray = *settingsTable["Camera"].as_array();
                 int i = 1;
                 for (const auto& camera : cameraArray) {
@@ -252,9 +250,6 @@ namespace photo {
                 // Remove leading whitespace from model
                 model.erase(0, model.find_first_not_of(" \t"));
 
-                std::cout << "Searching for camera: " << brand << "\n"; 
-                std::cout << model << std::endl;
-
                 toml::array matchingCameras;
                 toml::array& cameraArray = *settingsTable["Camera"].as_array();
                 for (size_t i = 0; i < cameraArray.size(); i++) {
@@ -267,7 +262,7 @@ namespace photo {
 
                     if (*getBrand == brand && *getModel == model) {
                         std::cout << "Found matching camera: " << *getBrand << " " << *getModel << std::endl;
-                        matchingCameras.push_back(cameraArray[i]);
+                        matchingCameras = toml::array{cameraArray[i]};
                     }
                 }
 
