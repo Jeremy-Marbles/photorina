@@ -189,9 +189,8 @@ int main(int argc, char** argv) {
                 //FIXED: parsedArgv should not go over index 1 else it calls the vector beyond its size and triggers bad_alloc
 
 
-                toml::array cameraToDelete = initPhotos.deleteCamera(storage.parsedArgv[1]);
+                initPhotos.deleteCamera(storage.parsedArgv[1]);
 
-                std::cout << cameraToDelete << std::endl;
 
                 break;
             }

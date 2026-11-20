@@ -1,6 +1,7 @@
 #include "photoReset.h"
 
 namespace photo {
+    //Create or load photo settings config file
     photoSettings::photoSettings()  {
         //new FIXME: settings.toml parameters are deleted each time else statement is triggered 
         //constructor is not meant to reset each time for future use.
@@ -235,69 +236,54 @@ namespace photo {
         }
     }
 
-    //Two pronged approach for deleting cameras:
-    //1. toml::array deleteCamera. Get camera model as input and compare to array values, then return a toml::array of matching array.
-    //2. int deleteCamera. Receive the camera to be deleted as a toml::array and remove it from the settings file.
-
-    toml::array photoSettings::deleteCamera(std::string cameraModel) {
+    void photoSettings::deleteCamera(std::string cameraModel) {
         try {
         
             toml::table settingsTable = toml::parse_file(cfgName);
             if (settingsTable.contains("Camera")) {
                 //Split string for information and compare with camera array to find matching camera
-                std::vector<std::string> cameraInfo;
+                //TODO: rework cameraModel string parsing to store both brand and model name 
+                //since new logic requires both brand and model to be compared separately
+                std::string brand, model;
                 std::istringstream iss(cameraModel);
-                std::string token;
-                do { // splits on whitespace
-                    std::transform(token.begin(), token.end(), token.begin(),
-                                   [](unsigned char c) { return std::tolower(c); });
-                    cameraInfo.push_back(token);
-                } while (iss >> token);
+                // Camera model may contain spaces, so we read the first word as brand and the rest as model
+                iss >> brand;
+                std::getline(iss, model);
+                // Remove leading whitespace from model
+                model.erase(0, model.find_first_not_of(" \t"));
+
+                std::cout << "Searching for camera: " << brand << "\n"; 
+                std::cout << model << std::endl;
 
                 toml::array matchingCameras;
                 toml::array& cameraArray = *settingsTable["Camera"].as_array();
-                for (const auto& camera : cameraArray) {
-                    bool isMatch = false;
-                    for (const auto& info : cameraInfo) {
-                        if (camera.as_table()->find(info) == camera.as_table()->end()) {
-                            isMatch = true;
-                            break;
-                        }
-                    }
-                    if (isMatch) {
-                        matchingCameras.push_back(camera);
+                for (size_t i = 0; i < cameraArray.size(); i++) {
+                    auto modelTable = cameraArray[i].as_table();
+                    auto getBrand = modelTable->at("CameraBrand").value<std::string>();
+                    auto getModel = modelTable->at("CameraModel").value<std::string>();
+
+                    //debug print
+                    std::cout << "Checking camera: " << (getBrand ? *getBrand : "N/A") << " " << (getModel ? *getModel : "N/A") << std::endl;
+
+                    if (*getBrand == brand && *getModel == model) {
+                        std::cout << "Found matching camera: " << *getBrand << " " << *getModel << std::endl;
+                        matchingCameras.push_back(cameraArray[i]);
                     }
                 }
 
+                //note: input variable subject to case sensitivity and exact string match, else matching will fail
                 //DEBUG
+                std::cout << "Matching cameras found: " << matchingCameras.size() << std::endl;
                 std::cout << "Camera Array Items" << std::endl;
-                std::cout << matchingCameras[1].as_string() << std::endl;    
-            return matchingCameras;
+                for (size_t i = 0; i < matchingCameras.size(); i++) {
+                    std::cout << "Matching camera " << i << ": " << matchingCameras[i].as_string() << std::endl;
+                }
+                
+                return;
             }
         } catch (const std::exception& e) {
             std::cerr << "Failed to fetch settings file: " << e.what() << std::endl;
             throw std::runtime_error("Failed to fetch settings file in deleteCamera");
-        }
-
-        throw std::runtime_error("end of deleteCamera function:");
-    }
-
-    int photoSettings::deleteCamera(toml::array camera) {
-        try {
-            toml::table settingsTable = toml::parse_file(cfgName);
-            
-            if (settingsTable.contains("Camera")) {
-                toml::array& cameraArray = *settingsTable["Camera"].as_array();
-                
-                for (size_t i = 0; i < cameraArray.size(); i++) {
-                
-                }
-
-            }
-
-        } catch (const std::exception& e){
-            std::cerr << "Failed to delete camera info:\n" << e.what() << std::endl;
-            return -1;
         }
 
         throw std::runtime_error("end of deleteCamera function:");
